@@ -110,7 +110,7 @@ TAKT.network = {
       depot: 'telefoniczna',
       nodes: [
         { x: 1120, y: 120, stop: 'Марысин', lat: 'Marysin' },
-        { x: 1000, y: 120, stop: 'Инфлянцка', lat: 'Inflancka' },
+        { x: 1000, y: 120, stop: 'Инфлянцка', lat: 'Inflancka', labelPos: 'below' },
         { x: 940, y: 120, stop: 'Телефоничная', lat: 'Telefoniczna', hub: true },
         { x: 880, y: 120 },
         { x: 820, y: 180 },
