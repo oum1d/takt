@@ -192,7 +192,7 @@ TAKT.dict.en = {
     lead: 'Add as many dispatchers as you need: shift lead, night dispatcher, depot duty officer, track engineer. The price does not move.',
     perMonth: 'zł / month',
     onRequest: 'on request',
-    more: 'Details',
+    more: 'Compare plans',
     request: 'Request a rollout',
     discuss: 'Discuss terms',
     startName: 'Starter',

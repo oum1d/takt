@@ -191,7 +191,7 @@ TAKT.dict.pl = {
     lead: 'Dyspozytorów można zakładać dowolnie wielu: kierownik zmiany, dyspozytor nocny, dyżurny zajezdni, inżynier służby torowej. Opłata się nie zmienia.',
     perMonth: 'zł / mies.',
     onRequest: 'na zapytanie',
-    more: 'Szczegóły',
+    more: 'Porównaj plany',
     request: 'Zapytaj o wdrożenie',
     discuss: 'Omów warunki',
     startName: 'Startowy',
