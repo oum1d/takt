@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="ru" data-theme="day">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ТАКТ — стенд: движение по рельсам</title>
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--font-ui); font-size: 14px;
+    display: grid; grid-template-rows: auto 1fr auto; min-height: 100vh;
+  }
+  header {
+    border-bottom: 1px solid var(--line); padding: var(--s4) var(--s6);
+    display: flex; gap: var(--s4); align-items: baseline; flex-wrap: wrap;
+  }
+  h1 { font-family: var(--font-display); font-size: 16px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+  .sub { color: var(--ink-2); }
+  main { padding: var(--s6); display: grid; place-items: center; }
+  .stage { width: min(100%, 900px); background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); }
+  svg { display: block; width: 100%; height: auto; }
+  .rail { fill: none; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+  .car { transform-box: fill-box; transform-origin: center; }
+  .car rect { fill: var(--panel); stroke: var(--ink); stroke-width: 1.5; rx: 2; }
+  .car .nose { fill: var(--ink); }
+  .tangent { stroke: var(--st-early); stroke-width: 1; stroke-dasharray: 3 3; opacity: .8; }
+  footer {
+    border-top: 1px solid var(--line); padding: var(--s4) var(--s6);
+    display: flex; gap: var(--s6); align-items: center; flex-wrap: wrap;
+  }
+  label { display: flex; gap: var(--s2); align-items: center; color: var(--ink-2); }
+  input[type=range] { accent-color: var(--accent); width: 180px; }
+  input[type=checkbox] { accent-color: var(--accent); }
+  output, .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 12px; color: var(--ink); }
+  :focus-visible { outline: none; box-shadow: var(--focus); border-radius: var(--r-sm); }
+</style>
+</head>
+<body>
+<header>
+  <h1>Стенд 01 — движение по рельсам</h1>
+  <span class="sub">getPointAtLength() + касательная. Тридцать строк, на которых стоит весь проект.</span>
+</header>
+
+<main>
+  <div class="stage">
+    <svg viewBox="0 0 900 380" role="img" aria-label="Три кривые траектории, по каждой едет вагон, разворачиваясь по касательной">
+      <path id="p1" class="rail" stroke="var(--rail-8)"
+        d="M 60 90 L 240 90 Q 280 90 300 110 L 420 230 Q 440 250 470 250 L 640 250 Q 680 250 700 230 L 830 100"/>
+      <path id="p2" class="rail" stroke="var(--rail-43)"
+        d="M 60 320 Q 200 320 260 250 T 480 120 Q 560 40 700 60 T 840 200"/>
+      <path id="p3" class="rail" stroke="var(--rail-11)"
+        d="M 80 200 C 220 200 220 340 360 340 S 500 200 640 200 S 780 320 850 320"/>
+      <g id="cars"></g>
+    </svg>
+  </div>
+</main>
+
+<footer>
+  <label>скорость
+    <input id="speed" type="range" min="10" max="200" value="70" step="5" aria-label="Скорость движения">
+    <output id="speedOut" class="num">70</output>
+  </label>
+  <label><input id="showTangent" type="checkbox"> показывать касательную</label>
+  <span class="num" id="fps">— fps</span>
+</footer>
+
+<script>
+/* Стенд 01. Здесь проверяется единственная вещь: точка едет по кривой,
+   встаёт на рельсы и разворачивается по касательной. Всё остальное в проекте —
+   надстройка над этими двумя функциями. */
+
+const svgNS = 'http://www.w3.org/2000/svg';
+const paths = ['p1', 'p2', 'p3'].map(id => document.getElementById(id));
+const carsLayer = document.getElementById('cars');
+const speedEl = document.getElementById('speed');
+const speedOut = document.getElementById('speedOut');
+const tangentEl = document.getElementById('showTangent');
+const fpsEl = document.getElementById('fps');
+
+const cars = paths.map((path, i) => {
+  const g = document.createElementNS(svgNS, 'g');
+  g.setAttribute('class', 'car');
+
+  const body = document.createElementNS(svgNS, 'rect');
+  body.setAttribute('x', -13); body.setAttribute('y', -5);
+  body.setAttribute('width', 26); body.setAttribute('height', 10);
+  g.appendChild(body);
+
+  const nose = document.createElementNS(svgNS, 'circle');
+  nose.setAttribute('class', 'nose');
+  nose.setAttribute('cx', 10); nose.setAttribute('cy', 0); nose.setAttribute('r', 1.6);
+  g.appendChild(nose);
+
+  const tangent = document.createElementNS(svgNS, 'line');
+  tangent.setAttribute('class', 'tangent');
+  tangent.setAttribute('x1', 0); tangent.setAttribute('y1', 0);
+  tangent.setAttribute('x2', 46); tangent.setAttribute('y2', 0);
+  tangent.style.display = 'none';
+  g.appendChild(tangent);
+
+  carsLayer.appendChild(g);
+  return { g, path, tangent, len: path.getTotalLength(), dist: i * 90 };
+});
+
+/* Положение и угол за один проход: две точки рядом дают и координату, и касательную. */
+function place(car) {
+  const len = car.len;
+  const d = ((car.dist % len) + len) % len;
+  const p = car.path.getPointAtLength(d);
+  const q = car.path.getPointAtLength((d + 1) % len);
+  const angle = Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI;
+  car.g.style.transform = `translate3d(${p.x.toFixed(2)}px, ${p.y.toFixed(2)}px, 0) rotate(${angle.toFixed(2)}deg)`;
+}
+
+let last = performance.now(), frames = 0, fpsAcc = 0;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+
+/* Один цикл кадров на все вагоны сразу — не по циклу на вагон. */
+function frame(now) {
+  const dt = Math.min((now - last) / 1000, 0.1);
+  last = now;
+  const v = Number(speedEl.value);
+  for (const car of cars) { car.dist += v * dt; place(car); }
+
+  fpsAcc += dt; frames++;
+  if (fpsAcc >= 0.5) { fpsEl.textContent = Math.round(frames / fpsAcc) + ' fps'; frames = 0; fpsAcc = 0; }
+  requestAnimationFrame(frame);
+}
+
+/* Тише едешь — при reduced-motion позиция обновляется раз в секунду скачком. */
+function stepped() {
+  const v = Number(speedEl.value);
+  for (const car of cars) { car.dist += v; place(car); }
+  fpsEl.textContent = 'шаг 1/с';
+}
+
+function start() {
+  if (reduced.matches) { cars.forEach(place); setInterval(stepped, 1000); }
+  else requestAnimationFrame(frame);
+}
+start();
+
+speedEl.addEventListener('input', () => { speedOut.value = speedEl.value; });
+tangentEl.addEventListener('change', () => {
+  cars.forEach(c => { c.tangent.style.display = tangentEl.checked ? '' : 'none'; });
+});
+</script>
+</body>
+</html>

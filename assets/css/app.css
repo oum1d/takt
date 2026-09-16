@@ -1,0 +1,683 @@
+/* ТАКТ — интерфейс диспетчерской.
+   Плотность как у пульта: много данных на единицу площади, глубина через
+   границы, а не через тени. Ничего не движется само по себе — движется
+   только то, что действительно едет по городу. */
+
+.app {
+  display: grid;
+  grid-template-columns: 264px minmax(0, 1fr) 336px;
+  grid-template-rows: var(--header-h) minmax(0, 1fr) auto;
+  grid-template-areas:
+    'head head head'
+    'left stage right'
+    'time time time';
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ——— шапка ——— */
+
+.app-head {
+  grid-area: head;
+  display: flex; align-items: center; gap: var(--s5);
+  padding: 0 var(--s4);
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  min-width: 0;
+}
+
+.brand {
+  display: flex; align-items: center; gap: var(--s2);
+  font-family: var(--font-display); font-weight: 800; font-size: 15px;
+  letter-spacing: 0.06em; color: var(--ink); text-decoration: none;
+  flex: none;
+}
+.brand:hover { color: var(--ink); }
+.brand__mark { width: 18px; height: 18px; color: var(--accent); }
+
+.nav-screens { display: flex; gap: 2px; flex: none; }
+.nav-screens a {
+  display: inline-flex; align-items: center; height: 32px; padding: 0 var(--s3);
+  border-radius: var(--r); font-size: 14px; font-weight: 500;
+  color: var(--ink-2); text-decoration: none;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.nav-screens a:hover { background: var(--panel-2); color: var(--ink); }
+.nav-screens a[aria-current='page'] { background: var(--accent-soft); color: var(--accent); }
+
+/* Пять чисел смены. Ширина колонок фиксирована табличными цифрами,
+   поэтому обновление раз в 5 секунд не двигает соседей. */
+.metrics { display: flex; align-items: center; gap: var(--s5); margin-left: auto; min-width: 0; }
+.metric { display: flex; flex-direction: column; gap: 1px; line-height: 1.1; }
+.metric__label { font-size: 11px; color: var(--ink-3); white-space: nowrap; }
+.metric__value {
+  font-family: var(--font-mono); font-size: 14px; font-weight: 500;
+  font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap;
+}
+.metric__value[data-tone='alarm'] { color: var(--st-alarm); }
+.metric__value[data-tone='late'] { color: var(--st-late); }
+.metric__value small { font-size: 11px; color: var(--ink-3); }
+
+/* Направление изменения подсвечивается на 400 мс и гаснет.
+   Постоянной подсветки нет: в рабочем инструменте она превращается в шум. */
+.metric__value.is-up { color: var(--st-late); transition: color var(--t-slow) var(--ease); }
+.metric__value.is-down { color: var(--st-ontime); transition: color var(--t-slow) var(--ease); }
+
+.tools { display: flex; align-items: center; gap: var(--s2); flex: none; }
+
+.kbd {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-family: var(--font-mono); font-size: 11px; color: var(--ink-3);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  padding: 2px 5px; background: var(--panel-2);
+}
+
+/* ——— панели ——— */
+
+.panel {
+  background: var(--panel);
+  display: flex; flex-direction: column;
+  min-height: 0; min-width: 0;
+}
+.panel--left { grid-area: left; border-right: 1px solid var(--line); }
+.panel--right { grid-area: right; border-left: 1px solid var(--line); }
+
+.panel__head {
+  display: flex; align-items: center; gap: var(--s2);
+  padding: var(--s3) var(--s4);
+  border-bottom: 1px solid var(--line);
+  flex: none;
+}
+.panel__title {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-3);
+}
+.panel__count {
+  margin-left: auto;
+  font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+}
+.panel__body { flex: 1; min-height: 0; }
+.panel__foot { flex: none; border-top: 1px solid var(--line); padding: var(--s3) var(--s4); }
+
+/* ——— список линий ——— */
+
+.line-row {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center; gap: var(--s3);
+  width: 100%;
+  padding: var(--s3) var(--s4);
+  border: 0; border-bottom: 1px solid var(--line);
+  border-left: 3px solid transparent;
+  background: transparent; color: inherit; font: inherit; text-align: left;
+  cursor: pointer;
+  transition: background var(--t-fast) var(--ease);
+}
+.line-row:hover { background: var(--panel-2); }
+.line-row[aria-pressed='true'] { background: var(--accent-soft); border-left-color: var(--accent); }
+.line-row[data-muted='true'] { opacity: .42; }
+
+/* Выбор линии прямо над схемой: там, куда смотрит диспетчер, а не только в списке слева. */
+.line-pick { margin-left: auto; display: flex; align-items: center; gap: 2px; flex-wrap: wrap; }
+.line-pick .filter-btn { margin-right: var(--s1); }
+.line-pick__btn {
+  display: inline-flex; padding: 2px; border: 0; border-radius: calc(var(--r-sm) + 2px);
+  background: transparent; cursor: pointer;
+  box-shadow: inset 0 0 0 1px transparent;
+  transition: box-shadow var(--t-fast) var(--ease);
+}
+.line-pick__btn:hover { box-shadow: inset 0 0 0 1px var(--line-strong); }
+.line-pick__btn[aria-pressed='true'] { box-shadow: inset 0 0 0 2px var(--ink); }
+.line-pick__btn .badge-line { pointer-events: none; }
+
+.map-note {
+  position: absolute; left: var(--s4); bottom: var(--s3);
+  font-size: 11px; color: var(--ink-3); pointer-events: none;
+}
+
+.line-row__name { font-size: 13px; color: var(--ink); font-weight: 500; display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.line-row__meta { font-size: 11px; color: var(--ink-3); display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.line-row__nums { text-align: right; font-family: var(--font-mono); font-size: 12px; font-variant-numeric: tabular-nums; }
+.line-row__headway { color: var(--ink); }
+.line-row__cars { color: var(--ink-3); font-size: 11px; }
+
+.filter-row { display: flex; gap: var(--s1); padding: var(--s2) var(--s4); border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.filter-btn {
+  font: inherit; font-size: 12px; padding: 3px var(--s2);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: transparent; color: var(--ink-2); cursor: pointer;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
+}
+.filter-btn:hover { background: var(--panel-2); color: var(--ink); }
+.filter-btn[aria-pressed='true'] { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+
+/* ——— сцена ——— */
+
+.stage {
+  grid-area: stage;
+  position: relative;
+  background: var(--bg);
+  min-width: 0; min-height: 0;
+  display: grid;
+}
+.screen { min-width: 0; min-height: 0; }
+.screen:not([data-active='true']) { display: none; }
+.screen[data-active='true'] { display: grid; grid-template-rows: auto minmax(0, 1fr); }
+
+.screen__head {
+  display: flex; align-items: center; gap: var(--s3);
+  padding: var(--s3) var(--s5);
+  border-bottom: 1px solid var(--line);
+  background: var(--panel);
+  flex-wrap: wrap;
+}
+.screen__title { font-size: 14px; font-weight: 600; }
+.screen__sub { font-size: 12px; color: var(--ink-3); }
+
+/* ——— карта сети ——— */
+
+.map-wrap { position: relative; overflow: hidden; }
+.map-svg { width: 100%; height: 100%; display: block; }
+
+.rail {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: opacity var(--t-base) var(--ease);
+}
+.rail--halo { stroke-width: 11; stroke: var(--bg); opacity: .9; }
+/* Скрытая фильтром часть схемы гаснет за 160 мс и перестаёт ловить мышь. */
+.map-svg [data-hidden='true'] { opacity: 0 !important; pointer-events: none; }
+.depot-label, .stop-label, .map-svg #layerDepots > g { transition: opacity var(--t-base) var(--ease); }
+
+.stop-dot { fill: var(--rail-node); stroke: var(--ink-3); stroke-width: 1.5; transition: opacity var(--t-base) var(--ease); }
+.stop-dot--hub { stroke: var(--ink); stroke-width: 2; }
+.stop-label {
+  font-family: var(--font-ui); font-size: 10px; fill: var(--ink-2);
+  paint-order: stroke; stroke: var(--bg); stroke-width: 3px; stroke-linejoin: round;
+  pointer-events: none;
+}
+.stop-label--hub { fill: var(--ink); font-weight: 600; font-size: 11px; }
+.depot-mark { fill: var(--rail-plate); stroke: var(--ink-3); stroke-width: 1.5; }
+.depot-label { font-size: 10px; fill: var(--ink-3); font-weight: 500; letter-spacing: .04em; text-transform: uppercase; }
+
+.map-layer[data-muted='true'] { opacity: .2; transition: opacity var(--t-base) var(--ease); }
+
+/* Вагон. Позиция ставится только через transform: перерисовка cx/cy
+   заставляет браузер пересчитывать геометрию всего SVG на каждом кадре. */
+.car {
+  transform-box: fill-box;
+  transform-origin: center;
+  cursor: pointer;
+}
+.car__body { stroke-width: 1.4; }
+.car__label {
+  font-family: var(--font-mono); font-size: 8px; font-weight: 600;
+  fill: var(--on-accent); text-anchor: middle; dominant-baseline: central;
+  pointer-events: none; letter-spacing: -0.04em;
+}
+.car[data-status='ontime'] .car__body { fill: var(--st-ontime); stroke: var(--st-ontime); }
+.car[data-status='late']   .car__body { fill: var(--st-late);   stroke: var(--st-late); }
+.car[data-status='early']  .car__body { fill: var(--st-early);  stroke: var(--st-early); }
+.car[data-status='stopped'] .car__body { fill: var(--st-idle);  stroke: var(--st-idle); }
+.car[data-alarm='true'] .car__body { fill: var(--st-alarm); stroke: var(--st-alarm); }
+/* Наведение только обводит вагон — подсказка «сюда можно нажать».
+   Данные появляются по нажатию, см. map.js. */
+.car:hover .car__ring { stroke: var(--ink-3); stroke-width: 1.5; }
+.car[data-selected='true'] .car__ring { stroke: var(--ink); stroke-width: 2; fill: none; }
+.car__ring { fill: none; stroke: none; }
+
+/* Значок происшествия на схеме. Однократный импульс в момент события —
+   и больше ничего: постоянная пульсация в углу экрана изматывает за час. */
+.inc-mark { cursor: pointer; }
+.inc-mark__shape { fill: var(--st-alarm); stroke: var(--bg); stroke-width: 1.5; }
+.inc-mark[data-tone='late'] .inc-mark__shape { fill: var(--st-late); }
+.inc-mark[data-tone='idle'] .inc-mark__shape { fill: var(--st-idle); opacity: .55; }
+.inc-mark__pulse { fill: none; stroke: var(--st-alarm); stroke-width: 2; opacity: 0; }
+.inc-mark.is-new .inc-mark__pulse { animation: incident-once 600ms var(--ease) 1; }
+@keyframes incident-once {
+  from { r: 8; opacity: .85; }
+  to { r: 26; opacity: 0; }
+}
+
+/* ——— лента происшествий ——— */
+
+.feed { display: flex; flex-direction: column; }
+.feed-item {
+  display: grid; gap: 4px;
+  width: 100%; text-align: left;
+  padding: var(--s3) var(--s4);
+  border: 0; border-bottom: 1px solid var(--line);
+  border-left: 3px solid transparent;
+  background: transparent; color: inherit; font: inherit; cursor: pointer;
+  transition: background var(--t-fast) var(--ease);
+}
+.feed-item:hover { background: var(--panel-2); }
+.feed-item[data-tone='alarm'] { border-left-color: var(--st-alarm); }
+.feed-item[data-tone='late'] { border-left-color: var(--st-late); }
+.feed-item[aria-pressed='true'] { background: var(--panel-2); }
+.feed-item[data-closed='true'] .feed-item__title { color: var(--ink-2); }
+
+.feed-item__top { display: flex; align-items: center; gap: var(--s2); }
+.feed-item__time { font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.feed-item__title { font-size: 13px; font-weight: 500; line-height: 1.35; }
+.feed-item__meta { display: flex; align-items: center; gap: var(--s2); font-size: 11px; color: var(--ink-3); }
+
+.feed-item.is-entering { animation: feed-in 320ms var(--ease) 1; }
+@keyframes feed-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ——— полоса времени ——— */
+
+.timebar {
+  grid-area: time;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center; gap: var(--s4);
+  padding: var(--s3) var(--s4);
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+}
+
+.time-now {
+  display: flex; align-items: baseline; gap: var(--s2);
+  font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+}
+.time-now__value { font-size: 20px; font-weight: 600; letter-spacing: -0.04em; }
+.time-now__shift { font-size: 11px; color: var(--ink-3); }
+
+.track-wrap { position: relative; display: grid; gap: 4px; min-width: 0; }
+.track-marks { position: relative; height: 14px; }
+.track-mark {
+  position: absolute; top: 0; transform: translateX(-50%);
+  font-family: var(--font-mono); font-size: 10px; color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.track {
+  position: relative; height: 26px;
+  background: var(--panel-sunken);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+.track__fill {
+  position: absolute; inset: 1px auto 1px 1px;
+  background: var(--accent-soft);
+  border-right: 1px solid var(--accent-line);
+  border-radius: 3px 0 0 3px;
+  pointer-events: none;
+}
+.track__inc {
+  position: absolute; top: 3px; bottom: 3px; width: 2px;
+  background: var(--st-idle); border-radius: 1px; pointer-events: none;
+}
+.track__inc[data-tone='alarm'] { background: var(--st-alarm); }
+.track__inc[data-tone='late'] { background: var(--st-late); }
+.track__head {
+  position: absolute; top: -3px; bottom: -3px; width: 3px;
+  background: var(--ink); border-radius: 2px; pointer-events: none;
+}
+.track input[type='range'] {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  margin: 0; opacity: 0; cursor: pointer;
+}
+.track:focus-within { box-shadow: var(--focus); border-radius: var(--r-sm); }
+
+.rate-group { display: flex; gap: 2px; }
+.rate-btn {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 500;
+  min-width: 38px; height: 30px; padding: 0 var(--s2);
+  border: 1px solid var(--line); border-radius: var(--r-sm);
+  background: var(--panel); color: var(--ink-2); cursor: pointer;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.rate-btn:hover { background: var(--panel-2); color: var(--ink); }
+.rate-btn[aria-pressed='true'] { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+
+/* ——— карточка вагона ——— */
+
+.vcard {
+  position: absolute; z-index: 20;
+  width: 268px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-pop);
+  padding: var(--s3) var(--s4) var(--s4);
+  pointer-events: none;
+}
+.vcard[hidden] { display: none; }
+.vcard__top { display: flex; align-items: center; gap: var(--s2); margin-bottom: var(--s2); }
+.vcard__id { font-family: var(--font-mono); font-size: 15px; font-weight: 600; letter-spacing: -0.04em; }
+.vcard__rows { display: grid; gap: 5px; }
+.vcard__row { display: flex; align-items: baseline; gap: var(--s3); font-size: 12px; }
+.vcard__key { color: var(--ink-3); min-width: 92px; }
+.vcard__val { color: var(--ink); margin-left: auto; text-align: right; }
+.vcard__val.num { font-size: 12px; }
+.vcard__bar { height: 4px; border-radius: 2px; background: var(--panel-sunken); overflow: hidden; width: 64px; }
+.vcard__bar i { display: block; height: 100%; background: var(--ink-3); }
+
+/* ——— экран «Линия» ——— */
+
+.line-screen { grid-template-rows: auto minmax(0, 1fr); min-height: 0; }
+.line-strip { padding: var(--s5) var(--s6) 0; }
+.strip-svg { width: 100%; height: 108px; display: block; }
+.strip-stop { fill: var(--rail-node); stroke: var(--ink-3); stroke-width: 1.5; }
+.strip-label { font-size: 10px; fill: var(--ink-2); }
+.strip-rail { fill: none; stroke-width: 6; stroke-linecap: round; }
+
+.thread-wrap { padding: 0 var(--s6) var(--s5); min-height: 0; }
+.thread-svg { width: 100%; height: 100%; display: block; }
+.thread-line { fill: none; stroke-width: 1.5; opacity: .85; }
+.thread-line[data-dir='-1'] { stroke-dasharray: 3 3; opacity: .5; }
+.thread-grid { stroke: var(--line); stroke-width: 1; }
+.thread-axis { font-family: var(--font-mono); font-size: 10px; fill: var(--ink-3); font-variant-numeric: tabular-nums; }
+.thread-now { stroke: var(--ink); stroke-width: 1.5; }
+.thread-band { fill: var(--st-alarm-soft); }
+
+/* ——— происшествия ——— */
+
+.inc-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.inc-table th {
+  position: sticky; top: 0; z-index: 1;
+  text-align: left; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--ink-3);
+  background: var(--panel); border-bottom: 1px solid var(--line);
+  padding: var(--s2) var(--s3); white-space: nowrap;
+}
+.inc-table td { padding: var(--s2) var(--s3); border-bottom: 1px solid var(--line); vertical-align: middle; }
+.inc-table tbody tr { cursor: pointer; transition: background var(--t-fast) var(--ease); }
+.inc-table tbody tr:hover { background: var(--panel-2); }
+.inc-table tbody tr[aria-selected='true'] { background: var(--accent-soft); }
+
+.inc-detail { display: grid; gap: var(--s4); padding: var(--s5); }
+.inc-detail__head { display: grid; gap: var(--s2); }
+.inc-detail__title { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+.timeline { display: grid; gap: 0; }
+.timeline li {
+  display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: var(--s3);
+  padding: var(--s2) 0 var(--s2) 0;
+  border-left: 1px solid var(--line); margin-left: 6px; padding-left: var(--s4);
+  position: relative; font-size: 13px;
+}
+.timeline li::before {
+  content: ''; position: absolute; left: -4px; top: 15px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--panel); border: 1.5px solid var(--ink-3);
+}
+.timeline li:last-child::before { background: var(--ink); border-color: var(--ink); }
+.timeline time { font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+
+/* ——— отчёты ——— */
+
+.reports { display: grid; gap: var(--s6); padding: var(--s5) var(--s6); align-content: start; }
+.report-card {
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r);
+  padding: var(--s4) var(--s5);
+}
+.report-card__head { display: flex; align-items: baseline; gap: var(--s3); margin-bottom: var(--s4); }
+.report-card__title { font-size: 13px; font-weight: 600; }
+.report-card__note { font-size: 12px; color: var(--ink-3); margin-left: auto; }
+
+.bars { display: grid; gap: var(--s2); }
+.bar-row { display: grid; grid-template-columns: 34px minmax(0, 1fr) 58px; align-items: center; gap: var(--s3); }
+.bar-track { height: 18px; background: var(--panel-sunken); border-radius: 3px; overflow: hidden; position: relative; }
+.bar-fill {
+  height: 100%; border-radius: 3px;
+  background: var(--line-color, var(--accent));
+  transition: width var(--t-slow) var(--ease);
+}
+.bar-target { position: absolute; top: -2px; bottom: -2px; width: 1px; background: var(--ink-3); }
+.bar-value { font-family: var(--font-mono); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+
+.heat { display: grid; grid-template-columns: 34px repeat(24, minmax(0, 1fr)); gap: 2px; font-size: 10px; }
+.heat__corner, .heat__hour, .heat__day { color: var(--ink-3); font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.heat__hour { text-align: center; }
+.heat__day { display: flex; align-items: center; }
+.heat__cell {
+  aspect-ratio: 1; border-radius: 2px; background: var(--panel-sunken);
+  opacity: 0;
+}
+.heat__cell.is-in { animation: heat-in 260ms var(--ease) forwards; }
+@keyframes heat-in { to { opacity: 1; } }
+
+.top-list { display: grid; gap: var(--s2); }
+.top-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: baseline; gap: var(--s3); font-size: 13px; padding-bottom: var(--s2); border-bottom: 1px solid var(--line); }
+.top-row:last-child { border-bottom: 0; }
+
+/* ——— командная палитра ——— */
+
+.palette-backdrop {
+  position: fixed; inset: 0; z-index: 60;
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  backdrop-filter: blur(3px);
+  display: grid; align-items: start; justify-items: center;
+  padding-top: 12vh;
+}
+.palette-backdrop[hidden] { display: none; }
+.palette {
+  width: min(560px, calc(100vw - 32px));
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+  animation: palette-in var(--t-slow) var(--ease);
+}
+@keyframes palette-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: none; }
+}
+.palette__input {
+  width: 100%; border: 0; border-bottom: 1px solid var(--line);
+  background: transparent; color: var(--ink);
+  font: inherit; font-size: 16px; padding: var(--s4) var(--s5);
+}
+.palette__input::placeholder { color: var(--ink-3); }
+.palette__list { max-height: 320px; overflow: auto; padding: var(--s2); }
+.palette__item {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--s3);
+  width: 100%; text-align: left; font: inherit;
+  padding: var(--s2) var(--s3); border: 0; border-radius: var(--r);
+  background: transparent; color: var(--ink); cursor: pointer;
+  opacity: 0; animation: palette-item 160ms var(--ease) forwards;
+}
+@keyframes palette-item { to { opacity: 1; } }
+.palette__item[data-active='true'] { background: var(--accent-soft); }
+.palette__hint { font-size: 11px; color: var(--ink-3); font-family: var(--font-mono); }
+.palette__empty { padding: var(--s5); text-align: center; color: var(--ink-3); font-size: 13px; }
+.palette__foot { display: flex; gap: var(--s4); padding: var(--s2) var(--s5); border-top: 1px solid var(--line); font-size: 11px; color: var(--ink-3); }
+
+/* ——— роли ——— */
+
+.app[data-role='depot'] {
+  grid-template-columns: 0 minmax(0, 1fr) 380px;
+}
+.app[data-role='depot'] .panel--left { display: none; }
+
+.app[data-role='driver'] {
+  grid-template-columns: 0 minmax(0, 1fr) 0;
+}
+.app[data-role='driver'] .panel--left,
+.app[data-role='driver'] .panel--right { display: none; }
+
+.role-menu { position: relative; }
+.role-menu__list {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 40;
+  min-width: 240px; padding: var(--s2);
+  background: var(--panel); border: 1px solid var(--line-strong);
+  border-radius: var(--r); box-shadow: var(--shadow-pop);
+}
+.role-menu__list[hidden] { display: none; }
+.role-menu__item {
+  display: grid; gap: 1px; width: 100%; text-align: left; font: inherit;
+  padding: var(--s2) var(--s3); border: 0; border-radius: var(--r-sm);
+  background: transparent; color: var(--ink); cursor: pointer;
+}
+.role-menu__item:hover { background: var(--panel-2); }
+.role-menu__item[aria-checked='true'] { background: var(--accent-soft); color: var(--accent); }
+.role-menu__item small { font-size: 11px; color: var(--ink-3); }
+
+/* Заглушка для узкого экрана: честно сказать, что схема тут не читается,
+   лучше, чем показать её нечитаемой. */
+.narrow-note { display: none; }
+
+/* ——— планшет и телефон ———
+   Дашборд рассчитан на 1920×1080 в диспетчерской. На телефоне открывается
+   то, ради чего начальник депо лезет в него из машины: сводка, лента, вагон. */
+
+@media (max-width: 1280px) {
+  .app { grid-template-columns: 232px minmax(0, 1fr) 300px; }
+  .metrics { gap: var(--s4); }
+}
+
+@media (max-width: 1023px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'head' 'stage' 'time';
+    height: auto; min-height: 100vh; overflow: visible;
+  }
+  .panel--left { display: none; }
+  .panel--right {
+    grid-area: auto; border-left: 0; border-top: 1px solid var(--line);
+  }
+  .app-head { flex-wrap: wrap; height: auto; padding: var(--s2) var(--s3); gap: var(--s3); }
+  .nav-screens { order: 3; width: 100%; overflow-x: auto; }
+  .metrics { order: 2; width: 100%; overflow-x: auto; gap: var(--s4); padding-bottom: 2px; }
+  .app { grid-template-rows: auto minmax(0, 1fr) auto; }
+  .map-wrap, .line-pick { display: none; }
+  .narrow-note {
+    display: grid; gap: var(--s3); padding: var(--s6) var(--s4);
+    align-content: start;
+  }
+  .narrow-note__box {
+    border: 1px solid var(--line); border-radius: var(--r);
+    background: var(--panel); padding: var(--s5);
+  }
+  .timebar { grid-template-columns: minmax(0, 1fr); gap: var(--s2); }
+  .rate-group { justify-content: space-between; }
+  .reports { padding: var(--s4); }
+  .heat { font-size: 8px; grid-template-columns: 24px repeat(24, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+  .metric__label { font-size: 10px; }
+  .screen__head { padding: var(--s3); }
+  .inc-detail { padding: var(--s4) var(--s3); }
+  .vcard { position: static; width: auto; box-shadow: none; }
+}
+
+/* Подписи времени на нитке: SVG растянут по обеим осям (preserveAspectRatio:
+   none), поэтому текст внутри него исказился бы. Держим подписи в HTML. */
+.thread-wrap { position: relative; }
+.thread-times { position: absolute; left: var(--s6); top: 0; bottom: var(--s5); width: 44px; pointer-events: none; z-index: 1; }
+.thread-time {
+  position: absolute; left: 0; transform: translateY(-50%);
+  font-family: var(--font-mono); font-size: 10px; color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  background: var(--bg); padding: 0 3px; border-radius: 2px;
+}
+.thread-band-edge { stroke: var(--st-alarm); stroke-width: 1; opacity: .5; }
+.thread-line { stroke-width: 1.6; }
+
+/* На экране происшествий лента справа дублирует таблицу — убираем её
+   и отдаём место разбору. Ширины меняются с переездом панели, а не рывком. */
+.app[data-screen='incidents'] { grid-template-columns: 264px minmax(0, 1fr) 0; }
+.app[data-screen='incidents'] .panel--right { display: none; }
+.app { transition: grid-template-columns var(--t-slow) var(--ease); }
+
+@media (max-width: 1023px) {
+  .nav-screens a { white-space: nowrap; }
+  .track-mark:not([data-major='true']) { display: none; }
+  .metric:last-child { display: none; }          /* «смена» статична — на телефоне место дороже */
+  .screen__head .chip { display: none; }
+}
+
+/* ——— экран начальника депо ———
+   Он смотрит смену из машины: крупные числа, незакрытые события, состояние
+   линий. Схема ему не нужна — он не управляет движением, он его контролирует. */
+
+.summary { display: grid; gap: var(--s6); padding: var(--s6); align-content: start; }
+.summary__grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1px; background: var(--line);
+  border: 1px solid var(--line); border-radius: var(--r); overflow: hidden;
+}
+.summary__cell { background: var(--panel); padding: var(--s4) var(--s5); display: grid; gap: 3px; }
+.summary__label { font-size: 11px; color: var(--ink-3); }
+.summary__value {
+  font-family: var(--font-mono); font-size: 28px; font-weight: 500;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.05em; line-height: 1;
+}
+.summary__value[data-tone='alarm'] { color: var(--st-alarm); }
+.summary__note { font-size: 11px; color: var(--ink-3); }
+
+.summary__lines { display: grid; gap: var(--s2); }
+.summary__line {
+  display: grid; grid-template-columns: 34px minmax(0, 1fr) auto auto;
+  align-items: center; gap: var(--s3);
+  padding: var(--s3) var(--s4);
+  border: 1px solid var(--line); border-radius: var(--r); background: var(--panel);
+}
+.summary__line-name { font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.summary__line-num { font-family: var(--font-mono); font-size: 13px; font-variant-numeric: tabular-nums; }
+
+/* ——— экран водителя ———
+   Экран смотрят на остановке несколько секунд. Поэтому одно главное число
+   размером во всю карточку и три подписи под ним — больше ничего. */
+
+.driver { display: grid; gap: var(--s5); padding: var(--s6); align-content: start; max-width: 760px; }
+.driver__head { display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; }
+.driver__pick {
+  font: inherit; font-size: 13px; padding: 6px var(--s3);
+  border: 1px solid var(--line-field); border-radius: var(--r);
+  background: var(--panel); color: var(--ink);
+}
+.driver__main {
+  border: 1px solid var(--line); border-radius: var(--r-lg);
+  background: var(--panel); padding: var(--s8) var(--s6);
+  display: grid; gap: var(--s2); justify-items: center; text-align: center;
+}
+.driver__dev {
+  font-family: var(--font-mono); font-size: clamp(48px, 9vw, 88px);
+  font-weight: 600; letter-spacing: -0.06em; line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.driver__dev[data-tone='late'] { color: var(--st-late); }
+.driver__dev[data-tone='early'] { color: var(--st-early); }
+.driver__dev[data-tone='ontime'] { color: var(--st-ontime); }
+.driver__dev[data-tone='stopped'] { color: var(--st-alarm); }
+.driver__state { display: inline-flex; align-items: center; gap: var(--s2); font-size: 16px; }
+.driver__rows { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; }
+.driver__row { background: var(--panel); padding: var(--s4); display: grid; gap: 3px; }
+.driver__row span { font-size: 11px; color: var(--ink-3); }
+.driver__row b { font-size: 17px; font-weight: 500; }
+.driver__row b.num { font-size: 18px; }
+.driver__order {
+  border: 1px solid var(--st-late); background: var(--st-late-soft);
+  border-radius: var(--r); padding: var(--s4) var(--s5);
+  display: grid; gap: 4px;
+}
+.driver__order[hidden] { display: none; }
+.driver__order-title { font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--st-late); font-weight: 600; }
+.driver__strip { border: 1px solid var(--line); border-radius: var(--r); background: var(--panel); padding: var(--s4); }
+.driver__strip svg { width: 100%; height: 84px; display: block; }
+
+/* Навигация подстраивается под роль: лишние экраны не прячутся в меню,
+   их просто нет — у водителя нет «отчётов для города». */
+.app[data-role='dispatcher'] [data-role-only]:not([data-role-only~='dispatcher']),
+.app[data-role='depot'] [data-role-only]:not([data-role-only~='depot']),
+.app[data-role='driver'] [data-role-only]:not([data-role-only~='driver']) { display: none; }
+
+.app[data-role='driver'] .panel--left,
+.app[data-role='driver'] .panel--right { display: none; }
+
+/* Водителю метрики всей сети не нужны: он ведёт один вагон,
+   а не смену. Остаются его число и часы. */
+.app[data-role='driver'] .metrics { display: none; }
+

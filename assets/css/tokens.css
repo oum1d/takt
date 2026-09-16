@@ -1,0 +1,136 @@
+/* ТАКТ — токены.
+   Правило проекта: цвета из группы «статус» не имеют права появляться
+   ни в одной кнопке, ссылке, рамке или иконке интерфейса.
+   --st-alarm (#C4342B) используется ровно в одном смысле: авария. */
+
+:root {
+  color-scheme: light;
+
+  /* Поверхности */
+  --bg:            #FBFBFC;
+  --panel:         #FFFFFF;
+  --panel-2:       #F5F6F8;
+  --panel-sunken:  #F0F2F5;
+  --line:          #E4E7EC;
+  --line-strong:   #CDD2DA;
+  /* Границы полей и кнопок обязаны давать 3:1 к фону — это отдельное
+     требование WCAG к нетекстовым элементам, декоративные линии слабее. */
+  --line-field:    #888F9C;
+  --on-accent:     #FFFFFF;
+
+  /* Текст */
+  --ink:           #0C0E12;
+  --ink-2:         #5C6270;
+  --ink-3:         #6E7482;
+  --ink-inv:       #FFFFFF;
+
+  /* Акцент — единственный «фирменный» цвет интерфейса */
+  --accent:        #0C6E77;
+  --accent-hover:  #0A5C64;
+  --accent-press:  #084950;
+  --accent-soft:   #E4F2F3;
+  --accent-line:   #9CCBCF;
+
+  /* Статусы вагонов и происшествий. Больше нигде. */
+  --st-ontime:     #2E7D5B;
+  --st-late:       #A35F12;
+  --st-early:      #5B6AD0;
+  --st-idle:       #6C727C;
+  --st-alarm:      #C4342B;
+
+  --st-ontime-soft: #E6F2EC;
+  --st-late-soft:   #FDF6EC;
+  --st-early-soft:  #ECEEFA;
+  --st-idle-soft:   #EFF0F2;
+  --st-alarm-soft:  #FAE9E7;
+
+  /* Схема сети */
+  --rail-6:  #A8620F;
+  --rail-8:  #0E7C86;
+  --rail-10: #5B6AD0;
+  --rail-11: #2E7D5B;
+  --rail-43: #8A5BA6;
+  --rail-46: #46687D;
+  --rail-node:  #FFFFFF;
+  --rail-plate: #F2F4F7;
+
+  /* Сетка 4px */
+  --s1: 4px;  --s2: 8px;  --s3: 12px; --s4: 16px;
+  --s5: 20px; --s6: 24px; --s8: 32px; --s10: 40px;
+  --s12: 48px; --s16: 64px; --s20: 80px; --s24: 96px;
+
+  --r-sm: 4px;
+  --r:    6px;
+  --r-lg: 10px;
+
+  /* Глубина через границы, не через тени */
+  --shadow-pop:  0 6px 20px -8px rgba(12, 14, 18, .18);
+  --shadow-modal: 0 24px 60px -20px rgba(12, 14, 18, .28);
+
+  /* Время. Служебное — 120–200 мс, постановочное — три исключения. */
+  --t-fast:  120ms;
+  --t-base:  160ms;
+  --t-slow:  200ms;
+  --t-stage: 700ms;
+  --ease:    cubic-bezier(.2, 0, .2, 1);
+  --ease-stage: cubic-bezier(.65, 0, .35, 1);
+
+  --font-display: 'Unbounded', 'Segoe UI', system-ui, sans-serif;
+  --font-ui: 'Onest', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Martian Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  --header-h: 56px;
+  --focus: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
+}
+
+/* Ночная смена. Не инверсия дневной темы: границы, поверхности
+   и статусы пересобраны под тёмный фон отдельно. */
+:root[data-theme='night'] {
+  color-scheme: dark;
+
+  --bg:            #101215;
+  --panel:         #181B20;
+  --panel-2:       #1E2228;
+  --panel-sunken:  #14171B;
+  --line:          #282C33;
+  --line-strong:   #3A4048;
+  --line-field:    #6A7280;
+  /* На светлой бирюзе ночной темы белый текст даёт 2.5:1 — на кнопке
+     он становится тёмным. */
+  --on-accent:     #0C0E12;
+
+  --ink:           #E8EAED;
+  --ink-2:         #A2A9B4;   /* поднят с #5C6270: на #181B20 тот давал 3.1:1 */
+  --ink-3:         #858D99;
+  --ink-inv:       #0C0E12;
+
+  --accent:        #35B5BF;
+  --accent-hover:  #4FC7D0;
+  --accent-press:  #2A9AA3;
+  --accent-soft:   #12292C;
+  --accent-line:   #1F5A60;
+
+  --st-ontime:     #4EBB86;
+  --st-late:       #E5A047;
+  --st-early:      #8B96E4;
+  --st-idle:       #9AA1AC;
+  --st-alarm:      #F0685C;
+
+  --st-ontime-soft: #14261E;
+  --st-late-soft:   #2A2015;
+  --st-early-soft:  #1B1D2E;
+  --st-idle-soft:   #1E2126;
+  --st-alarm-soft:  #2E1917;
+
+  --rail-6:  #E5A047;
+  --rail-8:  #35B5BF;
+  --rail-10: #8B96E4;
+  --rail-11: #4EBB86;
+  --rail-43: #B583D0;
+  --rail-46: #7E9DB5;
+  --rail-node:  #181B20;
+  --rail-plate: #22262C;
+
+  --shadow-pop:  0 6px 20px -8px rgba(0, 0, 0, .6);
+  --shadow-modal: 0 24px 60px -20px rgba(0, 0, 0, .75);
+}

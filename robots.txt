@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /takt/
+Disallow: /takt/app.html
+Disallow: /takt/rails.html
+
+Sitemap: https://oum1d.github.io/takt/sitemap.xml

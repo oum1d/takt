@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; frame-ancestors 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Возможности — ТАКТ</title>
+<meta name="description" data-i18n-content="page.featuresDesc" content="Что видит диспетчер, начальник депо и водитель в ТАКТе, с какими источниками данных работает система и как устроено хранение.">
+<link rel="canonical" href="https://oum1d.github.io/takt/features.html">
+<link rel="alternate" hreflang="ru" href="https://oum1d.github.io/takt/features.html">
+<link rel="alternate" hreflang="pl" href="https://oum1d.github.io/takt/features.html?lang=pl">
+<link rel="alternate" hreflang="en" href="https://oum1d.github.io/takt/features.html?lang=en">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Возможности ТАКТ">
+<meta property="og:description" content="Три роли, четыре экрана, интеграции с GPS, турникетами и контактной сетью.">
+<meta property="og:image" content="https://oum1d.github.io/takt/assets/img/og.png">
+<meta name="theme-color" content="#0C6E77">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<script src="assets/js/theme-boot.js"></script>
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/landing.css">
+</head>
+<body data-i18n-title="page.featuresTitle">
+<a class="skip-link" href="#main" data-i18n="nav.skip">Перейти к содержимому</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="ic-mark" viewBox="0 0 24 24">
+      <path d="M4 17V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M8 8h8M12 8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ic-check" viewBox="0 0 16 16"><path d="M3 8.6 6.2 12 13 4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.4" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".85" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<header class="site-head">
+  <div class="wrap site-head__inner">
+    <a class="brand" href="index.html">
+      <svg class="brand__mark" aria-hidden="true"><use href="#ic-mark"/></svg>
+      ТАКТ
+    </a>
+    <nav class="site-nav" aria-label="Разделы сайта">
+      <a href="features.html" aria-current="page" data-i18n="nav.features">Возможности</a>
+      <a href="pricing.html" data-i18n="nav.pricing">Цены</a>
+      <a href="index.html#implementation" data-i18n="nav.implementation">Внедрение</a>
+      <a href="index.html#faq" data-i18n="nav.faq">Вопросы</a>
+    </nav>
+    <div class="site-head__cta">
+      <div class="site-shift" data-i18n-attr="title:tools.shiftHint" title="Демо-смена трамвайной сети Лодзи">
+        <span class="site-shift__label" data-i18n="tools.shift">смена</span>
+        <span class="site-shift__value">06:00–18:00</span>
+      </div>
+      <div class="lang-switch" data-lang-switch></div>
+      <button class="btn btn--quiet site-search" type="button" data-site-search aria-haspopup="dialog">
+        <svg class="site-search__icon" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m10.5 10.5 3.3 3.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="site-search__text" data-i18n="tools.search">Поиск</span>
+        <span class="kbd">Ctrl K</span>
+      </button>
+      <button class="btn btn--quiet site-theme" type="button" data-site-theme aria-pressed="false">
+        <svg class="site-theme__moon" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M13.4 9.6A5.8 5.8 0 0 1 6.4 2.6 5.9 5.9 0 1 0 13.4 9.6Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <svg class="site-theme__sun" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v1.8M8 13.2V15M15 8h-1.8M2.8 8H1M12.9 3.1l-1.3 1.3M4.4 11.6l-1.3 1.3M12.9 12.9l-1.3-1.3M4.4 4.4 3.1 3.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="visually-hidden" data-i18n="tools.night">Ночная тема</span>
+      </button>
+      <a class="btn btn--ghost" href="app.html" data-demo-link="app.html" data-i18n="nav.login">Войти</a>
+      <a class="btn" href="app.html" data-demo-link="app.html" data-site-demo><span class="site-demo__long" data-i18n="nav.demo">Смотреть демо</span><span class="site-demo__short" data-i18n="nav.demoShort" aria-hidden="true">Демо</span></a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="hero" style="padding-bottom:var(--s10)">
+    <div class="wrap">
+      <p class="hero__eyebrow" data-i18n="featuresPage.eyebrow">Возможности</p>
+      <h1 style="font-size:clamp(32px,3.8vw,50px);max-width:18ch" data-i18n="featuresPage.title">Один продукт, три разных рабочих места</h1>
+      <p class="hero__lead" style="margin-top:var(--s5)" data-i18n="featuresPage.lead">
+        Диспетчер, начальник депо и водитель смотрят на одну и ту же смену, но
+        каждому нужно своё. Интерфейс не прячет функции в меню — он перестраивается
+        под роль: панели переезжают на новые места, а не исчезают.
+      </p>
+    </div>
+  </section>
+
+  <!-- Роли -->
+  <section class="section" id="roles">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="section__label" data-i18n="featuresPage.rolesLabel">Роли</p>
+        <h2 data-i18n="featuresPage.rolesTitle">Что видит каждый</h2>
+      </div>
+
+      <div class="features">
+        <article class="feature">
+          <div class="feature__body">
+            <span class="chip" data-i18n="featuresPage.dispatcherChip">Основная роль</span>
+            <h3 style="margin-top:var(--s3)" data-i18n="featuresPage.dispatcherTitle">Диспетчер</h3>
+            <p data-i18n="featuresPage.dispatcherText">Двенадцатичасовая смена перед экраном.</p>
+            <ul class="plan__list" style="margin-top:var(--s4)">
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.d1">Схема сети со всеми вагонами и их состоянием</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.d2">График движения по линии с интервалами</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.d3">Лента происшествий и разбор по минутам</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.d4">Перемотка смены и разбор задним числом</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.d5">Ночная тема и полное управление с клавиатуры</span></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="feature">
+          <div class="feature__body">
+            <span class="chip" data-i18n="featuresPage.depotChip">С телефона</span>
+            <h3 style="margin-top:var(--s3)" data-i18n="featuresPage.depotTitle">Начальник депо</h3>
+            <p data-i18n="featuresPage.depotText">Смотрит смену из машины, между делами.</p>
+            <ul class="plan__list" style="margin-top:var(--s4)">
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.dep1">Сводка смены: выпуск, интервалы, пунктуальность</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.dep2">Только незакрытые происшествия по своему депо</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.dep3">Карточка вагона с водителем и отклонением</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.dep4">Отчёт за смену одним экраном</span></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="feature">
+          <div class="feature__body">
+            <span class="chip" data-i18n="featuresPage.driverChip">В кабине</span>
+            <h3 style="margin-top:var(--s3)" data-i18n="featuresPage.driverTitle">Водитель</h3>
+            <p data-i18n="featuresPage.driverText">Одна линия, свой выход, связь с диспетчером.</p>
+            <ul class="plan__list" style="margin-top:var(--s4)">
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.dr1">Своё отклонение от графика крупной цифрой</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.dr2">Интервал до идущего впереди вагона</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.dr3">Указания диспетчера: выдержка, отстой, оборот</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.dr4">Сообщение о происшествии в два касания</span></li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="feature">
+          <div class="feature__body">
+            <span class="chip" data-i18n="featuresPage.cityChip">Для города</span>
+            <h3 style="margin-top:var(--s3)" data-i18n="featuresPage.cityTitle">Замдиректора и мэрия</h3>
+            <p data-i18n="featuresPage.cityText">Отчётность, которую раньше собирали вручную к отчётной дате.</p>
+            <ul class="plan__list" style="margin-top:var(--s4)">
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.c1">Пунктуальность и соблюдение интервала по линиям</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.c2">Тепловая карта 24×7 и топ проблемных перекрёстков</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.c3">Причины простоя в минутах и деньгах</span></li>
+              <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="featuresPage.c4">Выгрузка PDF, CSV, XLSX и API</span></li>
+            </ul>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Интеграции -->
+  <section class="section" id="integrations">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="section__label" data-i18n="featuresPage.srcLabel">Источники данных</p>
+        <h2 data-i18n="featuresPage.srcTitle">Работаем с тем, что уже стоит в парке</h2>
+        <p class="section__lead" data-i18n="featuresPage.srcLead">
+          ТАКТ не требует менять подвижной состав.
+        </p>
+      </div>
+
+      <div class="counts">
+        <div class="count">
+          <div class="count__value" data-i18n="featuresPage.required">обязательно</div>
+          <h3 data-i18n="featuresPage.gpsTitle">GPS-трекеры вагонов</h3>
+          <p data-i18n="featuresPage.gpsText">Положение и скорость.</p>
+        </div>
+        <div class="count">
+          <div class="count__value" data-i18n="featuresPage.desired">желательно</div>
+          <h3 data-i18n="featuresPage.gateTitle">Турникеты и счётчики</h3>
+          <p data-i18n="featuresPage.gateText">Заполненность вагона.</p>
+        </div>
+        <div class="count">
+          <div class="count__value" data-i18n="featuresPage.desired">желательно</div>
+          <h3 data-i18n="featuresPage.catTitle">Датчики контактной сети</h3>
+          <p data-i18n="featuresPage.catText">Напряжение по секциям.</p>
+        </div>
+        <div class="count">
+          <div class="count__value" data-i18n="featuresPage.optional">опционально</div>
+          <h3 data-i18n="featuresPage.weatherTitle">Погодный сервис</h3>
+          <p data-i18n="featuresPage.weatherText">Гололёд и ливень меняют допустимые интервалы.</p>
+        </div>
+        <div class="count">
+          <div class="count__value" data-i18n="featuresPage.optional">опционально</div>
+          <h3 data-i18n="featuresPage.trafficTitle">Городские светофорные контроллеры</h3>
+          <p data-i18n="featuresPage.trafficText">Там, где есть приоритет для трамвая.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Безопасность -->
+  <section class="section" id="security">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="section__label" data-i18n="featuresPage.secLabel">Безопасность и данные</p>
+        <h2 data-i18n="featuresPage.secTitle">Сухой раздел, который читают внимательнее всех остальных</h2>
+      </div>
+
+      <div class="features">
+        <article class="feature">
+          <div class="feature__body">
+            <h3 data-i18n="featuresPage.storeTitle">Хранение</h3>
+            <p data-i18n="featuresPage.storeText">Данные в европейском дата-центре.</p>
+          </div>
+        </article>
+        <article class="feature">
+          <div class="feature__body">
+            <h3 data-i18n="featuresPage.accessTitle">Доступ</h3>
+            <p data-i18n="featuresPage.accessText">Права проверяются на сервере.</p>
+          </div>
+        </article>
+        <article class="feature">
+          <div class="feature__body">
+            <h3 data-i18n="featuresPage.pdTitle">Персональные данные</h3>
+            <p data-i18n="featuresPage.pdText">Система хранит только то, без чего не работает диспетчерская.</p>
+          </div>
+        </article>
+        <article class="feature">
+          <div class="feature__body">
+            <h3 data-i18n="featuresPage.faultTitle">Отказоустойчивость</h3>
+            <p data-i18n="featuresPage.faultText">Если связь с вагоном пропала, система не додумывает его положение.</p>
+          </div>
+        </article>
+      </div>
+
+      <div class="demo-note" style="margin-top:var(--s8)">
+        <svg width="16" height="16" aria-hidden="true"><use href="#ic-info"/></svg>
+        <span data-i18n="featuresPage.demoNote">
+          Демонстрационный сайт. Описанные меры — это то, как устроен продукт по замыслу.
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight">
+    <div class="wrap wrap--narrow" style="text-align:center">
+      <h2 style="font-family:var(--font-display)" data-i18n="featuresPage.ctaTitle">Посмотрите, как это выглядит в работе</h2>
+      <p class="section__lead" style="margin-inline:auto;max-width:52ch" data-i18n="featuresPage.ctaLead">
+        Демо открывается без регистрации.
+      </p>
+      <p style="margin-top:var(--s6)">
+        <a class="btn btn--lg" href="app.html" data-demo-link="app.html" data-i18n="hero.open">Открыть демо</a>
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="site-foot__grid">
+      <div>
+        <a class="brand" href="index.html" style="margin-bottom:var(--s3)">
+          <svg class="brand__mark" aria-hidden="true"><use href="#ic-mark"/></svg>
+          ТАКТ
+        </a>
+        <p style="font-size:14px;color:var(--ink-2);max-width:34ch" data-i18n="foot.about">
+          Диспетчерская для городского электротранспорта.
+        </p>
+      </div>
+      <div>
+        <h2 class="foot-title" data-i18n="foot.product">Продукт</h2>
+        <ul>
+          <li><a href="features.html" data-i18n="nav.features">Возможности</a></li>
+          <li><a href="pricing.html" data-i18n="nav.pricing">Цены</a></li>
+          <li><a href="app.html" data-demo-link="app.html" data-i18n="foot.demo">Демо диспетчерской</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="foot-title" data-i18n="foot.company">Компания</h2>
+        <ul>
+          <li><a href="index.html#implementation" data-i18n="nav.implementation">Внедрение</a></li>
+          <li><a href="index.html#faq" data-i18n="nav.faq">Вопросы</a></li>
+          <li><a href="index.html#request" data-i18n="foot.contact">Связаться</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="foot-title" data-i18n="foot.legal">Правовое</h2>
+        <ul>
+          <li><a href="privacy.html" data-i18n="foot.privacy">Политика конфиденциальности</a></li>
+          <li><a href="privacy.html#cookies" data-i18n="foot.cookies">Файлы cookie</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="site-foot__bottom">
+      <span data-i18n="foot.copy">© 2026 ТАКТ · демонстрационный проект</span>
+      <span data-i18n="foot.address">Лодзь, ул. Пётрковска (адрес вымышлен)</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/i18n/ru.js"></script>
+<script src="assets/js/i18n/pl.js"></script>
+<script src="assets/js/i18n/en.js"></script>
+<script src="assets/js/i18n/ru-app.js"></script>
+<script src="assets/js/i18n/pl-app.js"></script>
+<script src="assets/js/i18n/en-app.js"></script>
+<script src="assets/js/i18n/incidents-pl.js"></script>
+<script src="assets/js/i18n/incidents-en.js"></script>
+<script src="assets/js/i18n/core.js"></script>
+<script src="assets/js/data/network.js"></script>
+<script src="assets/js/data/fleet.js"></script>
+<script src="assets/js/data/incidents.js"></script>
+<script src="assets/js/data/reports.js"></script>
+<script src="assets/js/sim/geometry.js"></script>
+<script src="assets/js/sim/clock.js"></script>
+<script src="assets/js/sim/simulator.js"></script>
+<script src="assets/js/ui/landing.js"></script>
+<script src="assets/js/ui/site-tools.js"></script>
+</body>
+</html>

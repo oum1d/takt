@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self'; connect-src 'none'; form-action 'none'; base-uri 'none'; frame-ancestors 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="robots" content="noindex, nofollow">
+<title>Диспетчерская — ТАКТ</title>
+<meta name="description" content="Демонстрационный интерфейс диспетчерской ТАКТ: живая схема сети, перемотка смены, происшествия и отчёты.">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<script src="assets/js/theme-boot.js"></script>
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body data-i18n-title="page.appTitle">
+<a class="skip-link" href="#stage" data-i18n="app.skip">Перейти к содержимому</a>
+
+<!-- Значки статусов. Форма несёт то же значение, что и цвет:
+     интерфейс обязан читаться при дейтеранопии и в чёрно-белом скриншоте. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="st-ontime" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.4" fill="currentColor"/></symbol>
+    <symbol id="st-late" viewBox="0 0 12 12">
+      <circle cx="6" cy="6" r="4.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M6 6V2.2A3.8 3.8 0 0 1 9.3 8Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="st-early" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4" fill="none" stroke="currentColor" stroke-width="2.2"/></symbol>
+    <symbol id="st-stopped" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" rx="1" fill="currentColor"/></symbol>
+    <symbol id="st-alarm" viewBox="0 0 12 12"><path d="M6 1.4 11 10.6H1Z" fill="currentColor"/></symbol>
+    <symbol id="ic-warn" viewBox="0 0 14 14"><path d="M7 1.6 13 12.4H1Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 5.6v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="7" cy="10.4" r=".8" fill="currentColor"/></symbol>
+    <symbol id="ic-mark" viewBox="0 0 24 24">
+      <path d="M4 17V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M8 8h8M12 8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ic-sun" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v1.8M8 13.2V15M15 8h-1.8M2.8 8H1M12.9 3.1l-1.3 1.3M4.4 11.6l-1.3 1.3M12.9 12.9l-1.3-1.3M4.4 4.4 3.1 3.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+    <symbol id="ic-moon" viewBox="0 0 16 16"><path d="M13.4 9.6A5.8 5.8 0 0 1 6.4 2.6 5.9 5.9 0 1 0 13.4 9.6Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-user" viewBox="0 0 16 16"><circle cx="8" cy="5.4" r="2.7" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.8 13.6a5.2 5.2 0 0 1 10.4 0" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<div class="app" id="app" data-role="dispatcher">
+
+  <header class="app-head">
+    <a class="brand" href="index.html" data-i18n-attr="title:app.brandTitle" title="На главную ТАКТ">
+      <svg class="brand__mark" aria-hidden="true"><use href="#ic-mark"/></svg>
+      ТАКТ
+    </a>
+
+    <nav class="nav-screens" data-i18n-attr="aria-label:app.screens" aria-label="Экраны продукта">
+      <a href="#map" data-screen-link="map" data-role-only="dispatcher" aria-current="page" data-i18n="app.map">Карта сети</a>
+      <a href="#line" data-screen-link="line" data-role-only="dispatcher" data-i18n="app.line">Линия</a>
+      <a href="#depot" data-screen-link="depot" data-role-only="depot" data-i18n="app.depot">Сводка смены</a>
+      <a href="#driver" data-screen-link="driver" data-role-only="driver" data-i18n="app.driver">Мой выход</a>
+      <a href="#incidents" data-screen-link="incidents" data-role-only="dispatcher depot" data-i18n="app.incidents">Происшествия</a>
+      <a href="#reports" data-screen-link="reports" data-role-only="dispatcher depot" data-i18n="app.reports">Отчёты</a>
+    </nav>
+
+    <!-- Пять чисел смены. aria-live нет намеренно: числа меняются постоянно,
+         и озвучивание каждого превратило бы работу со скринридером в пытку.
+         Изменения статуса объявляет лента происшествий. -->
+    <div class="metrics" id="metrics">
+      <div class="metric">
+        <span class="metric__label" data-i18n="app.mOnLine">на линии</span>
+        <span class="metric__value" data-metric="onLine">—</span>
+      </div>
+      <div class="metric">
+        <span class="metric__label" data-i18n="app.mHeadway">средний интервал</span>
+        <span class="metric__value" data-metric="headway">—</span>
+      </div>
+      <div class="metric">
+        <span class="metric__label" data-i18n="app.mPunct">пунктуальность</span>
+        <span class="metric__value" data-metric="punctuality">—</span>
+      </div>
+      <div class="metric">
+        <span class="metric__label" data-i18n="app.mOpen">открытых</span>
+        <span class="metric__value" data-metric="open">—</span>
+      </div>
+      <div class="metric">
+        <span class="metric__label" data-i18n="app.mShift">смена</span>
+        <span class="metric__value" data-metric="shift">06:00–18:00</span>
+      </div>
+    </div>
+
+    <div class="tools">
+      <div class="lang-switch" data-lang-switch></div>
+      <button class="btn btn--quiet" id="paletteOpen" type="button" aria-haspopup="dialog">
+        <span data-i18n="app.search">Поиск</span> <span class="kbd">Ctrl K</span>
+      </button>
+      <button class="btn btn--quiet" id="themeToggle" type="button" aria-pressed="false">
+        <svg width="15" height="15" aria-hidden="true"><use href="#ic-moon" id="themeIcon"/></svg>
+        <span class="visually-hidden" data-i18n="app.night">Ночная тема</span>
+      </button>
+      <div class="role-menu">
+        <button class="btn btn--quiet" id="roleToggle" type="button" aria-expanded="false" aria-haspopup="true">
+          <svg width="15" height="15" aria-hidden="true"><use href="#ic-user"/></svg>
+          <span id="roleLabel">Диспетчер</span>
+        </button>
+        <div class="role-menu__list" id="roleList" role="menu" hidden>
+          <button class="role-menu__item" role="menuitemradio" aria-checked="true" data-role="dispatcher" type="button">
+            <span data-i18n="roles.dispatcher">Диспетчер</span> <small data-i18n="roles.dispatcherHint">Вся сеть, управление сменой</small>
+          </button>
+          <button class="role-menu__item" role="menuitemradio" aria-checked="false" data-role="depot" type="button">
+            <span data-i18n="roles.depot">Начальник депо</span> <small data-i18n="roles.depotHint">Сводка и происшествия</small>
+          </button>
+          <button class="role-menu__item" role="menuitemradio" aria-checked="false" data-role="driver" type="button">
+            <span data-i18n="roles.driver">Водитель</span> <small data-i18n="roles.driverHint">Своя линия и связь</small>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Левая панель: линии сети -->
+  <aside class="panel panel--left" data-i18n-attr="aria-label:app.linesAria" aria-label="Линии сети">
+    <div class="panel__head">
+      <h2 class="panel__title" data-i18n="app.linesPanel">Линии</h2>
+      <span class="panel__count" id="linesCount">6</span>
+    </div>
+    <div class="filter-row" role="group" data-i18n-attr="aria-label:app.depotFilter" aria-label="Фильтр по депо">
+      <button class="filter-btn" type="button" data-depot="all" aria-pressed="true" data-i18n="app.allDepots">все депо</button>
+      <button class="filter-btn" type="button" data-depot="chojny" aria-pressed="false"></button>
+      <button class="filter-btn" type="button" data-depot="telefoniczna" aria-pressed="false"></button>
+      <button class="filter-btn" type="button" data-depot="brus" aria-pressed="false"></button>
+    </div>
+    <div class="panel__body scroll" id="lineList"></div>
+    <div class="panel__foot">
+      <div class="vcard__row"><span class="vcard__key" data-i18n="app.offline">Вне линии</span><span class="vcard__val num" id="offlineCount">5</span></div>
+      <div class="vcard__row"><span class="vcard__key" data-i18n="app.depots">Депо</span><span class="vcard__val" id="depotNames"></span></div>
+    </div>
+  </aside>
+
+  <!-- Сцена: четыре экрана продукта -->
+  <main class="stage" id="stage" tabindex="-1">
+
+    <section class="screen" data-screen="map" data-active="true" aria-label="Карта сети">
+      <div class="screen__head">
+        <h1 class="screen__title" data-i18n="app.mapTitle">Карта сети · Лодзь</h1>
+        <span class="screen__sub" id="mapSub">47 вагонов на линии</span>
+        <div class="line-pick" id="linePick" role="group" data-i18n-attr="aria-label:app.linePick" aria-label="Показать на схеме только одну линию">
+          <button class="filter-btn" type="button" data-pick="all" aria-pressed="true" data-i18n="app.allLines">все линии</button>
+        </div>
+      </div>
+      <div class="map-wrap" id="mapWrap">
+        <svg class="map-svg" id="mapSvg" viewBox="185 22 1075 892" preserveAspectRatio="xMidYMid meet"
+             role="img" data-i18n-attr="aria-label:app.mapAria" aria-label="Схема трамвайной сети Лодзи">
+          <g id="layerRails"></g>
+          <g id="layerStops"></g>
+          <g id="layerDepots"></g>
+          <g id="layerIncidents"></g>
+          <g id="layerCars"></g>
+        </svg>
+        <span class="map-note" data-i18n="app.mapChip">Схема, а не географическая карта</span>
+        <div class="vcard" id="vcard" hidden role="status"></div>
+      </div>
+      <div class="narrow-note">
+        <div class="narrow-note__box">
+          <h2 style="font-size:15px;margin-bottom:8px" data-i18n="app.narrowTitle">Схема сети открывается на экране от 1024 px</h2>
+          <p style="font-size:13px;color:var(--ink-2)" data-i18n="app.narrowText">В диспетчерской стоят мониторы 1920×1080, и схема рассчитана на них.</p>
+        </div>
+        <div class="narrow-note__box">
+          <h2 style="font-size:13px;margin-bottom:8px" data-i18n="app.narrowLines">Линии сети</h2>
+          <div id="narrowLines" class="bars"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen line-screen" data-screen="line" aria-label="Линия во времени">
+      <div class="screen__head">
+        <h1 class="screen__title"><span data-i18n="app.line">Линия</span> <span id="lineTitleNum" class="num">8</span></h1>
+        <span class="screen__sub" id="lineTitleName">Згеж — Пабянице</span>
+        <div class="metrics" style="margin-left:auto;gap:var(--s5)">
+          <div class="metric"><span class="metric__label" data-i18n="app.linePlanned">интервал план</span><span class="metric__value" id="lmPlanned">—</span></div>
+          <div class="metric"><span class="metric__label" data-i18n="app.lineActual">интервал факт</span><span class="metric__value" id="lmActual">—</span></div>
+          <div class="metric"><span class="metric__label" data-i18n="app.lineWorst">худший вагон</span><span class="metric__value" id="lmWorst">—</span></div>
+          <div class="metric"><span class="metric__label" data-i18n="app.linePunct">пунктуальность</span><span class="metric__value" id="lmPunct">—</span></div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-rows:auto minmax(0,1fr);min-height:0">
+        <div class="line-strip">
+          <svg class="strip-svg" id="stripSvg" viewBox="0 0 1200 76" preserveAspectRatio="xMidYMid meet"
+               role="img" data-i18n-attr="aria-label:app.stripAria" aria-label="Маршрут, распрямлённый в горизонтальную ось"></svg>
+        </div>
+        <div class="thread-wrap">
+          <div class="thread-times" id="threadTimes" aria-hidden="true"></div>
+          <svg class="thread-svg" id="threadSvg" preserveAspectRatio="none"
+               role="img" data-i18n-attr="aria-label:app.threadAria" aria-label="График движения"></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- Начальник депо: сводка смены вместо схемы -->
+    <section class="screen" data-screen="depot" aria-label="Сводка смены">
+      <div class="screen__head">
+        <h1 class="screen__title" data-i18n="roles.depotTitle">Сводка смены</h1>
+        <span class="screen__sub" id="depotSub">депо Хойны · 10 сентября</span>
+        <span class="chip" style="margin-left:auto" data-i18n="roles.depotChip">Роль: начальник депо</span>
+      </div>
+      <div class="scroll">
+        <div class="summary">
+          <div class="summary__grid" id="depotNumbers"></div>
+
+          <div>
+            <h2 class="panel__title" style="margin-bottom:var(--s3)" data-i18n="roles.openTitle">Незакрытые происшествия</h2>
+            <div class="summary__lines" id="depotOpen"></div>
+          </div>
+
+          <div>
+            <h2 class="panel__title" style="margin-bottom:var(--s3)" data-i18n="roles.linesTitle">Линии сети</h2>
+            <div class="summary__lines" id="depotLines"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Водитель: один экран, одно главное число -->
+    <section class="screen" data-screen="driver" aria-label="Мой выход">
+      <div class="screen__head">
+        <h1 class="screen__title" data-i18n="roles.driverTitle">Мой выход</h1>
+        <span class="screen__sub" id="driverSub">линия 8 · Згеж — Пабянице</span>
+        <div class="driver__head" style="margin-left:auto">
+          <label class="visually-hidden" for="driverPick" data-i18n="roles.pickCar">Выбрать вагон</label>
+          <select class="driver__pick" id="driverPick"></select>
+        </div>
+      </div>
+      <div class="scroll">
+        <div class="driver">
+          <div class="driver__main">
+            <div class="summary__label" data-i18n="roles.devLabel">отклонение от графика</div>
+            <div class="driver__dev" id="driverDev">+00:00</div>
+            <div class="driver__state status" id="driverState"></div>
+          </div>
+
+          <div class="driver__order" id="driverOrder" hidden>
+            <span class="driver__order-title" data-i18n="roles.order">Указание диспетчера</span>
+            <span id="driverOrderText"></span>
+          </div>
+
+          <div class="driver__rows">
+            <div class="driver__row"><span data-i18n="roles.next">следующая остановка</span><b id="driverNext">—</b></div>
+            <div class="driver__row"><span data-i18n="roles.gap">интервал до впереди идущего</span><b class="num" id="driverGap">—</b></div>
+            <div class="driver__row"><span data-i18n="roles.occupancy">заполненность</span><b class="num" id="driverOcc">—</b></div>
+            <div class="driver__row"><span data-i18n="roles.speed">скорость</span><b class="num" id="driverSpeed">—</b></div>
+          </div>
+
+          <div class="driver__strip">
+            <svg id="driverStrip" viewBox="0 0 1000 84" preserveAspectRatio="xMidYMid meet"
+                 role="img" data-i18n-attr="aria-label:roles.stripAria" aria-label="Маршрут с положением моего вагона и соседних"></svg>
+          </div>
+
+          <button class="btn btn--ghost" type="button" id="driverReport" data-i18n="roles.report">Сообщить о происшествии</button>
+          <p style="font-size:12px;color:var(--ink-3)">
+            <span data-i18n="roles.reportNote">В рабочей системе кнопка открывает список типов события.</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" data-screen="incidents" aria-label="Происшествия">
+      <div class="screen__head">
+        <h1 class="screen__title" data-i18n="app.incTitle">Происшествия смены</h1>
+        <span class="screen__sub" id="incSub">—</span>
+        <div class="filter-row" style="margin-left:auto;border:0;padding:0" role="group" data-i18n-attr="aria-label:app.incFilter" aria-label="Фильтр по статусу">
+          <button class="filter-btn" type="button" data-inc-filter="all" aria-pressed="true" data-i18n="app.incAll">все</button>
+          <button class="filter-btn" type="button" data-inc-filter="open" aria-pressed="false" data-i18n="app.incOpen">открытые</button>
+          <button class="filter-btn" type="button" data-inc-filter="closed" aria-pressed="false" data-i18n="app.incClosed">закрытые</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);min-height:0">
+        <div class="scroll" style="border-right:1px solid var(--line)">
+          <table class="inc-table">
+            <caption class="visually-hidden" data-i18n="app.tableCaption">Происшествия текущей смены</caption>
+            <thead>
+              <tr>
+                <th scope="col" data-i18n="app.colTime">Время</th><th scope="col" data-i18n="app.colLine">Линия</th><th scope="col" data-i18n="app.colEvent">Событие</th>
+                <th scope="col" data-i18n="app.colType">Тип</th><th scope="col" data-i18n="app.colStatus">Статус</th>
+              </tr>
+            </thead>
+            <tbody id="incBody"></tbody>
+          </table>
+        </div>
+        <div class="scroll" id="incDetail"></div>
+      </div>
+    </section>
+
+    <section class="screen" data-screen="reports" aria-label="Отчёты">
+      <div class="screen__head">
+        <h1 class="screen__title" data-i18n="app.reports">Отчёты</h1>
+        <span class="screen__sub" data-i18n="app.reportsPeriod">Период: 1–10 сентября 2026 · сравнение с августом</span>
+        <button class="btn btn--ghost btn--quiet" id="exportPdf" type="button" style="margin-left:auto" data-i18n="app.exportPdf">Экспорт для города · PDF</button>
+      </div>
+      <div class="scroll"><div class="reports" id="reports"></div></div>
+    </section>
+
+  </main>
+
+  <!-- Правая панель: лента происшествий -->
+  <aside class="panel panel--right" data-i18n-attr="aria-label:app.feedAria" aria-label="Лента происшествий">
+    <div class="panel__head">
+      <h2 class="panel__title" data-i18n="app.feedTitle">Происшествия</h2>
+      <span class="panel__count" id="feedCount">—</span>
+    </div>
+    <div class="panel__body scroll">
+      <div class="feed" id="feed"></div>
+    </div>
+    <div class="panel__foot">
+      <p class="visually-hidden" id="incLive" aria-live="polite"></p>
+      <p class="visually-hidden" id="alarmLive" aria-live="assertive"></p>
+      <span style="font-size:11px;color:var(--ink-3)" data-i18n="app.feedNote">Демонстрационные данные.</span>
+    </div>
+  </aside>
+
+  <!-- Полоса времени: одна на все экраны, потому что время в системе одно -->
+  <footer class="timebar">
+    <div class="time-now">
+      <span class="time-now__value" id="clockValue">07:46</span>
+      <span class="time-now__shift" data-i18n="app.shiftLabel">смена 06:00–18:00</span>
+    </div>
+
+    <div class="track-wrap">
+      <div class="track-marks" id="trackMarks"></div>
+      <div class="track" id="track">
+        <div class="track__fill" id="trackFill"></div>
+        <div class="track__head" id="trackHead"></div>
+        <label class="visually-hidden" for="timeRange" data-i18n="app.timeRange">Время смены</label>
+        <input type="range" id="timeRange" min="360" max="1080" step="0.5" value="466"
+               aria-valuetext="07:46">
+      </div>
+    </div>
+
+    <div class="rate-group" role="group" data-i18n-attr="aria-label:app.rateGroup" aria-label="Скорость времени">
+      <button class="rate-btn" type="button" id="playBtn" aria-pressed="true" data-i18n-attr="title:app.pause" title="Пауза, пробел">II</button>
+      <button class="rate-btn" type="button" data-rate="1" aria-pressed="true">×1</button>
+      <button class="rate-btn" type="button" data-rate="10" aria-pressed="false">×10</button>
+      <button class="rate-btn" type="button" data-rate="60" aria-pressed="false">×60</button>
+      <button class="rate-btn" type="button" id="nowBtn" aria-pressed="false" data-i18n-attr="title:app.nowTitle" title="Вернуться к текущему моменту" data-i18n="app.nowBtn">сейчас</button>
+    </div>
+  </footer>
+</div>
+
+<!-- Командная палитра -->
+<div class="palette-backdrop" id="paletteBackdrop" hidden>
+  <div class="palette" role="dialog" aria-modal="true" data-i18n-attr="aria-label:app.paletteLabel" aria-label="Команды и поиск">
+    <label class="visually-hidden" for="paletteInput" data-i18n="app.paletteSearchLabel">Поиск по линиям, вагонам, происшествиям и командам</label>
+    <input class="palette__input" id="paletteInput" type="text" autocomplete="off" spellcheck="false"
+           data-i18n-attr="placeholder:app.palettePh" placeholder="Линия, вагон, происшествие или команда" aria-controls="paletteList" aria-expanded="true" role="combobox">
+    <div class="palette__list" id="paletteList" role="listbox" data-i18n-attr="aria-label:app.paletteResults" aria-label="Результаты"></div>
+    <div class="palette__foot">
+      <span data-i18n="app.paletteUp">↑↓ выбрать</span><span data-i18n="app.paletteEnter">Enter перейти</span><span data-i18n="app.paletteEsc">Esc закрыть</span>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/i18n/ru.js"></script>
+<script src="assets/js/i18n/pl.js"></script>
+<script src="assets/js/i18n/en.js"></script>
+<script src="assets/js/i18n/ru-app.js"></script>
+<script src="assets/js/i18n/pl-app.js"></script>
+<script src="assets/js/i18n/en-app.js"></script>
+<script src="assets/js/i18n/incidents-pl.js"></script>
+<script src="assets/js/i18n/incidents-en.js"></script>
+<script src="assets/js/i18n/core.js"></script>
+<script src="assets/js/data/network.js"></script>
+<script src="assets/js/data/fleet.js"></script>
+<script src="assets/js/data/incidents.js"></script>
+<script src="assets/js/data/reports.js"></script>
+<script src="assets/js/sim/geometry.js"></script>
+<script src="assets/js/sim/clock.js"></script>
+<script src="assets/js/sim/simulator.js"></script>
+<script src="assets/js/ui/map.js"></script>
+<script src="assets/js/ui/line.js"></script>
+<script src="assets/js/ui/incidents.js"></script>
+<script src="assets/js/ui/reports.js"></script>
+<script src="assets/js/ui/roles.js"></script>
+<script src="assets/js/ui/shell.js"></script>
+</body>
+</html>

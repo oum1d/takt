@@ -1,0 +1,6 @@
+tools/photos-raw/
+tools/img-raw/
+.env
+*.log
+Thumbs.db
+desktop.ini

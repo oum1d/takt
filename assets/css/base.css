@@ -1,0 +1,215 @@
+/* ТАКТ — общая база: сброс, типографика, элементы управления.
+   Всё, что встречается и на лендинге, и в продукте. */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-ui);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 { margin: 0; font-weight: 600; line-height: 1.15; letter-spacing: -0.02em; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; list-style: none; }
+img, svg { max-width: 100%; }
+img { height: auto; }
+
+a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+a:hover { color: var(--accent-hover); }
+
+/* Все числа — моноширинные и с табличными цифрами.
+   Без этого колонка «отклонение» дёргается по ширине при каждом обновлении. */
+.num, .mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+  letter-spacing: -0.03em;
+}
+
+.display { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.03em; }
+
+/* ——— фокус ——— */
+:focus { outline: none; }
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus);
+  border-radius: var(--r-sm);
+  position: relative;
+  z-index: 2;
+}
+
+.skip-link {
+  position: absolute; left: var(--s3); top: -100px; z-index: 200;
+  background: var(--panel); color: var(--ink);
+  border: 1px solid var(--line-strong); border-radius: var(--r);
+  padding: var(--s2) var(--s4);
+}
+.skip-link:focus-visible { top: var(--s3); }
+
+/* ——— переключатель языка ———
+   Три кода вместо флагов: флаг обозначает страну, а не язык, и для
+   английского пришлось бы выбирать между Британией и США. Общий для сайта
+   и диспетчерской: раньше стили жили только в landing.css, и в продукте
+   кнопки языка рисовались браузером по умолчанию. */
+.lang-switch {
+  display: inline-flex; gap: 2px; padding: 2px; flex: none;
+  border: 1px solid var(--line-field); border-radius: calc(var(--r-sm) + 2px);
+  background: var(--panel);
+}
+.lang-btn {
+  font: inherit; font-size: 12px; font-weight: 600; letter-spacing: .02em;
+  padding: 3px 7px; min-width: 30px; min-height: 24px;
+  border: 0; border-radius: var(--r-sm);
+  background: transparent; color: var(--ink-2); cursor: pointer;
+  transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
+}
+.lang-btn:hover { background: var(--panel-2); color: var(--ink); }
+.lang-btn[aria-pressed='true'] { background: var(--ink); color: var(--panel); }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px;
+  padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ——— кнопки ——— */
+
+.btn {
+  --btn-bg: var(--accent);
+  --btn-ink: var(--on-accent);
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--s2);
+  font: inherit; font-weight: 500;
+  padding: 9px var(--s4);
+  min-height: 38px;
+  border: 1px solid transparent;
+  border-radius: var(--r);
+  background: var(--btn-bg);
+  color: var(--btn-ink);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease),
+              color var(--t-fast) var(--ease);
+}
+.btn:hover { --btn-bg: var(--accent-hover); color: var(--on-accent); }
+.btn:active { --btn-bg: var(--accent-press); }
+
+.btn--ghost {
+  --btn-bg: transparent; --btn-ink: var(--ink);
+  border-color: var(--line-field);
+}
+.btn--ghost:hover { --btn-bg: var(--panel-2); --btn-ink: var(--ink); color: var(--ink); border-color: var(--line-strong); }
+
+.btn--quiet {
+  --btn-bg: transparent; --btn-ink: var(--ink-2);
+  padding: 6px var(--s3); min-height: 32px;
+}
+.btn--quiet:hover { --btn-bg: var(--panel-2); --btn-ink: var(--ink); color: var(--ink); }
+
+.btn--lg { min-height: 46px; padding: 12px var(--s6); font-size: 16px; }
+.btn[aria-disabled='true'], .btn:disabled { opacity: .5; pointer-events: none; }
+
+/* ——— поля ——— */
+
+.field { display: grid; gap: 6px; }
+.field > label { font-size: 13px; color: var(--ink-2); font-weight: 500; }
+
+.input, .textarea, .select {
+  font: inherit;
+  width: 100%;
+  padding: 9px var(--s3);
+  min-height: 38px;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line-field);
+  border-radius: var(--r);
+  transition: border-color var(--t-fast) var(--ease), background var(--t-fast) var(--ease);
+}
+.input:hover, .textarea:hover, .select:hover { border-color: var(--ink-3); }
+.input:focus-visible, .textarea:focus-visible, .select:focus-visible { border-color: var(--accent); }
+.textarea { min-height: 96px; resize: vertical; line-height: 1.45; }
+.input::placeholder, .textarea::placeholder { color: var(--ink-3); }
+
+/* Ошибка формы намеренно НЕ красная: красный в этом продукте
+   означает аварию на линии и больше ничего. Ошибку поля несут
+   янтарная рамка, значок и текст — три признака вместо одного цвета. */
+.field[data-invalid='true'] .input,
+.field[data-invalid='true'] .textarea,
+.field[data-invalid='true'] .select { border-color: var(--st-late); background: var(--st-late-soft); }
+
+.field-error {
+  display: none;
+  align-items: center; gap: 6px;
+  font-size: 13px; color: var(--st-late); font-weight: 500;
+}
+.field[data-invalid='true'] .field-error { display: flex; }
+.field-error svg { flex: none; }
+
+/* ——— мелкие элементы ——— */
+
+.chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px var(--s2);
+  font-size: 12px; font-weight: 500;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--panel-2);
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.badge-line {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 26px; height: 22px; padding: 0 5px;
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono); font-size: 12px; font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  /* В ночной теме линии светлые, поэтому текст на плашке маршрута
+     переключается вместе с темой, а не остаётся белым. */
+  color: var(--on-accent);
+  background: var(--line-color, var(--ink-2));
+}
+
+/* Статус несут форма значка и подпись, а не только цвет —
+   иначе интерфейс перестаёт читаться при дейтеранопии
+   и в чёрно-белой распечатке отчёта. */
+.status {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--ink-2); white-space: nowrap;
+}
+.status svg { flex: none; }
+.status[data-tone='ontime'] { color: var(--st-ontime); }
+.status[data-tone='late']   { color: var(--st-late); }
+.status[data-tone='early']  { color: var(--st-early); }
+.status[data-tone='idle'], .status[data-tone='stopped'] { color: var(--ink-2); }
+.status[data-tone='alarm']  { color: var(--st-alarm); }
+
+hr.rule { border: 0; border-top: 1px solid var(--line); margin: 0; }
+
+/* ——— прокрутка ——— */
+.scroll { overflow: auto; scrollbar-width: thin; scrollbar-color: var(--line-strong) transparent; overscroll-behavior: contain; }
+.scroll::-webkit-scrollbar { width: 10px; height: 10px; }
+.scroll::-webkit-scrollbar-thumb { background: var(--line-strong); border-radius: 6px; border: 3px solid var(--panel); }
+.scroll::-webkit-scrollbar-track { background: transparent; }
+
+/* Широкое содержимое прокручивается внутри себя, страница — никогда вбок. */
+.overflow-x { overflow-x: auto; }
+
+/* ——— движение ———
+   Инструмент должен полностью работать без анимации: при reduced-motion
+   гаснут только переходы, ни одна функция не отключается. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

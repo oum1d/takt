@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; font-src 'self'; connect-src 'none'; base-uri 'none'; frame-ancestors 'none'">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>ТАКТ — диспетчерская для городского трамвая</title>
+<meta name="description" data-i18n-content="page.indexDesc" content="ТАКТ собирает диспетчерскую трамвайного оператора в один экран: живая схема сети, интервалы, происшествия и отчёты для города. Демо открывается без регистрации.">
+<link rel="canonical" href="https://oum1d.github.io/takt/">
+<link rel="alternate" hreflang="ru" href="https://oum1d.github.io/takt/">
+<link rel="alternate" hreflang="pl" href="https://oum1d.github.io/takt/?lang=pl">
+<link rel="alternate" hreflang="en" href="https://oum1d.github.io/takt/?lang=en">
+<link rel="alternate" hreflang="x-default" href="https://oum1d.github.io/takt/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ТАКТ — диспетчерская для городского трамвая">
+<meta property="og:description" content="Сорок семь вагонов на одном экране: живая схема сети, интервалы, происшествия и отчёты. Демо без регистрации.">
+<meta property="og:image" content="https://oum1d.github.io/takt/assets/img/og.png">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:locale:alternate" content="pl_PL">
+<meta property="og:locale:alternate" content="en_GB">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0C6E77">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<script src="assets/js/theme-boot.js"></script>
+<link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/landing.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "ТАКТ",
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Web",
+  "inLanguage": ["ru", "pl", "en"],
+  "description": "Диспетчерская для городского трамвая: живая схема сети, контроль интервалов, происшествия и отчёты для города.",
+  "offers": [
+    { "@type": "Offer", "name": "Стартовый", "price": "1200", "priceCurrency": "PLN" },
+    { "@type": "Offer", "name": "Городской", "price": "3900", "priceCurrency": "PLN" }
+  ]
+}
+</script>
+</head>
+<body data-i18n-title="page.indexTitle">
+<a class="skip-link" href="#main" data-i18n="nav.skip">Перейти к содержимому</a>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="ic-mark" viewBox="0 0 24 24">
+      <path d="M4 17V7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3Z" fill="none" stroke="currentColor" stroke-width="2"/>
+      <path d="M8 8h8M12 8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ic-check" viewBox="0 0 16 16"><path d="M3 8.6 6.2 12 13 4.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-warn" viewBox="0 0 14 14"><path d="M7 1.6 13 12.4H1Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M7 5.6v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="7" cy="10.4" r=".8" fill="currentColor"/></symbol>
+    <symbol id="ic-arrows" viewBox="0 0 20 20"><path d="M7.5 6 4 10l3.5 4M12.5 6 16 10l-3.5 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-info" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.4" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M8 7.2v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="4.9" r=".85" fill="currentColor"/></symbol>
+  </defs>
+</svg>
+
+<header class="site-head">
+  <div class="wrap site-head__inner">
+    <a class="brand" href="index.html" aria-current="page">
+      <svg class="brand__mark" aria-hidden="true"><use href="#ic-mark"/></svg>
+      ТАКТ
+    </a>
+    <nav class="site-nav" aria-label="Разделы сайта">
+      <a href="features.html" data-i18n="nav.features">Возможности</a>
+      <a href="pricing.html" data-i18n="nav.pricing">Цены</a>
+      <a href="#implementation" data-i18n="nav.implementation">Внедрение</a>
+      <a href="#faq" data-i18n="nav.faq">Вопросы</a>
+    </nav>
+    <div class="site-head__cta">
+      <div class="site-shift" data-i18n-attr="title:tools.shiftHint" title="Демо-смена трамвайной сети Лодзи">
+        <span class="site-shift__label" data-i18n="tools.shift">смена</span>
+        <span class="site-shift__value">06:00–18:00</span>
+      </div>
+      <div class="lang-switch" data-lang-switch></div>
+      <button class="btn btn--quiet site-search" type="button" data-site-search aria-haspopup="dialog">
+        <svg class="site-search__icon" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="4.6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="m10.5 10.5 3.3 3.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span class="site-search__text" data-i18n="tools.search">Поиск</span>
+        <span class="kbd">Ctrl K</span>
+      </button>
+      <button class="btn btn--quiet site-theme" type="button" data-site-theme aria-pressed="false">
+        <svg class="site-theme__moon" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M13.4 9.6A5.8 5.8 0 0 1 6.4 2.6 5.9 5.9 0 1 0 13.4 9.6Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <svg class="site-theme__sun" width="15" height="15" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="3.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1v1.8M8 13.2V15M15 8h-1.8M2.8 8H1M12.9 3.1l-1.3 1.3M4.4 11.6l-1.3 1.3M12.9 12.9l-1.3-1.3M4.4 4.4 3.1 3.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <span class="visually-hidden" data-i18n="tools.night">Ночная тема</span>
+      </button>
+      <a class="btn btn--ghost" href="app.html" data-demo-link="app.html" data-i18n="nav.login">Войти</a>
+      <a class="btn" href="app.html" data-demo-link="app.html" id="openDemo" data-site-demo><span class="site-demo__long" data-i18n="nav.demo">Смотреть демо</span><span class="site-demo__short" data-i18n="nav.demoShort" aria-hidden="true">Демо</span></a>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- Первый экран: работающая схема, а не скриншот -->
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div>
+        <p class="hero__eyebrow" data-i18n="hero.eyebrow">Диспетчеризация городского трамвая</p>
+        <h1 data-i18n-html="hero.title">Сорок семь вагонов.<br>Один экран.</h1>
+        <p class="hero__lead" data-i18n="hero.lead">
+          Диспетчерская для городского трамвая. Вместо трёх мониторов, Excel
+          и мессенджера, куда водители пишут «стою».
+        </p>
+        <div class="hero__actions">
+          <a class="btn btn--lg" href="app.html" data-demo-link="app.html" data-i18n="hero.open">Открыть демо</a>
+          <a class="btn btn--ghost btn--lg" href="#implementation" data-i18n="hero.how">Как проходит внедрение</a>
+        </div>
+        <p style="margin-top:var(--s6);font-size:13px;color:var(--ink-3)" data-i18n="hero.note">
+          Демо открывается без регистрации. Смена идёт прямо сейчас — её можно перемотать.
+        </p>
+      </div>
+
+      <!-- Вся карточка — ссылка в демо: живую схему хочется потрогать,
+           и первое, что делают, — нажимают на неё. -->
+      <a class="hero__stage" href="app.html" data-demo-link="app.html"
+         data-i18n-attr="aria-label:hero.stageLink" aria-label="Открыть демо диспетчерской с этой же минуты смены">
+        <div class="hero__stage-head">
+          <span data-i18n="hero.city">Лодзь · сеть из шести линий</span>
+          <span class="hero__stage-time"><span id="heroTime">07:46</span> <span class="hero__stage-shift" data-i18n="hero.shift">· смена 06:00–18:00</span></span>
+        </div>
+        <div class="hero__map-wrap">
+          <svg class="hero__map" id="heroMap" viewBox="185 22 1075 892" preserveAspectRatio="xMidYMid meet"
+               aria-hidden="true" focusable="false"></svg>
+          <span class="hero__open" aria-hidden="true"><span data-i18n="hero.stageHint">Открыть демо</span> <span class="hero__open-arrow">→</span></span>
+        </div>
+        <div class="hero__stats">
+          <div class="hero__stat">
+            <div class="hero__stat-label" data-i18n="hero.statCars">вагонов на линии</div>
+            <div class="hero__stat-value" data-stat="onLine">47 / 52</div>
+          </div>
+          <div class="hero__stat">
+            <div class="hero__stat-label" data-i18n="hero.statHeadway">средний интервал</div>
+            <div class="hero__stat-value" data-stat="headway">9:33</div>
+          </div>
+          <div class="hero__stat">
+            <div class="hero__stat-label" data-i18n="hero.statPunct">пунктуальность</div>
+            <div class="hero__stat-value" data-stat="punctuality">81%</div>
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Три монитора → один экран -->
+  <section class="section" id="before-after">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="section__label" data-i18n="compare.label">Что меняется</p>
+        <h2 data-i18n-html="compare.title">Раньше диспетчер узнавал о заторе от водителя.<br>Теперь — от системы, за две минуты до.</h2>
+        <p class="section__lead" data-i18n="compare.lead">
+          Схема сети 2009 года на одном мониторе, графики выхода в Excel на втором,
+          мессенджер на третьем. Данные не сходятся между собой, а сводка за смену
+          собирается вручную к вечеру. Потяните разделитель.
+        </p>
+      </div>
+
+      <div class="compare" id="compare">
+        <!-- Ярлык каждой половины живёт внутри неё: «после» лежит поверх «до»
+             со своим фоном, поэтому закрытая половина прячет и свой ярлык,
+             и он не наезжает на цифры соседней. -->
+        <div class="compare__side">
+          <img src="assets/img/control-room-old.jpg" width="1280" height="720"
+               data-i18n-attr="alt:compare.photoAlt"
+               alt="Рабочее место диспетчера: три монитора в ряд — схема сети, таблица с графиками выхода и окно мессенджера, перед ними клавиатуры и путаница кабелей">
+          <span class="compare__tag compare__tag--before" data-i18n="compare.before">Три монитора</span>
+        </div>
+        <!-- «После» — та же раскладка, что у трёх мониторов на фото, только на
+             одном экране: графики линий вместо Excel, схема, лента вместо мессенджера. -->
+        <div class="compare__side compare__after">
+          <div class="compare__after-inner">
+            <div class="compare__bar">
+              <div class="compare__bar-items">
+                <span class="compare__bar-item"><span data-i18n="hero.statCars">на линии</span><b data-stat="onLine">47 / 52</b></span>
+                <span class="compare__bar-item"><span data-i18n="hero.statHeadway">интервал</span><b data-stat="headway">9:33</b></span>
+                <span class="compare__bar-item"><span data-i18n="hero.statPunct">пунктуальность</span><b data-stat="punctuality">81%</b></span>
+                <span class="compare__bar-item"><span data-i18n="hero.statOpen">открытых</span><b data-stat="open">3</b></span>
+              </div>
+              <span class="compare__tag compare__tag--after" data-i18n="compare.after">Один экран</span>
+            </div>
+            <div class="compare__body">
+              <div class="compare__col compare__col--lines" aria-hidden="true">
+                <span class="compare__col-title" data-i18n="compare.colLines">Линии · интервал</span>
+                <div class="compare__lines" id="compareLines"></div>
+              </div>
+              <div class="compare__map">
+                <svg class="compare__mini" data-mini-map data-labels="hubs" data-rail-width="7" data-car-scale="1.45"
+                     viewBox="185 22 1075 892" preserveAspectRatio="xMidYMid meet"
+                     role="img" data-i18n-attr="aria-label:compare.miniAlt"
+                     aria-label="Тот же город в ТАКТе: одна схема, на которой видны все вагоны сразу"></svg>
+              </div>
+              <div class="compare__col compare__col--feed" aria-hidden="true">
+                <span class="compare__col-title" data-i18n="compare.colFeed">Происшествия</span>
+                <div class="compare__feed" id="compareFeed"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="compare__handle">
+          <span class="compare__knob"><svg width="20" height="20" aria-hidden="true"><use href="#ic-arrows"/></svg></span>
+        </div>
+        <label class="visually-hidden" for="compareRange" data-i18n="compare.handle">Положение разделителя между «до» и «после»</label>
+        <input type="range" id="compareRange" min="0" max="100" value="52" step="1">
+      </div>
+    </div>
+  </section>
+
+  <!-- Возможности: настоящие куски интерфейса -->
+  <section class="section section--features" id="features">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="section__label" data-i18n="features.label">Возможности</p>
+        <h2 data-i18n="features.title">Четыре инструмента, которые заменяют три монитора</h2>
+        <p class="section__lead" data-i18n="features.lead">
+          Ниже — не иллюстрации. Это те же самые блоки продукта, они работают
+          прямо на этой странице.
+        </p>
+      </div>
+
+      <div class="features features--demo">
+        <article class="feature">
+          <div class="feature__body">
+            <h3 data-i18n="features.mapTitle">Схема сети, а не карта города</h3>
+            <p class="feature__key" data-i18n="features.mapKey">Диспетчер видит, между какими остановками вагон, — а не точку на карте города.</p>
+            <p data-i18n="features.mapText">Линии под 45°, узлы пересадок, номера маршрутов на вагонах. Нажмите на вагон — появятся выход, водитель, отклонение и заполненность.</p>
+            <span class="feature__note"><svg width="14" height="14" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="features.mapNote">Обновление позиций — 60 раз в секунду</span></span>
+          </div>
+          <div class="feature__demo">
+            <svg class="mini-map" data-mini-map data-rail-width="9" data-car-scale="1.05"
+                 viewBox="250 205 930 250" preserveAspectRatio="xMidYMid slice"
+                 role="img" data-i18n-attr="aria-label:features.mapAlt"
+                 aria-label="Фрагмент схемы сети с движущимися вагонами"></svg>
+          </div>
+        </article>
+
+        <article class="feature">
+          <div class="feature__body">
+            <h3 data-i18n="features.incTitle">Происшествия с разбором по минутам</h3>
+            <p class="feature__key" data-i18n="features.incKey">Что случилось, какие вагоны встали и сколько стоил простой — по каждому событию.</p>
+            <p data-i18n="features.incText">Перекрытие пути, обрыв контактной сети, скопление, медицинский случай. Красный цвет в системе есть только здесь.</p>
+            <span class="feature__note"><svg width="14" height="14" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="features.incNote">Лента не двигается под курсором при обновлении</span></span>
+          </div>
+          <div class="feature__demo">
+            <div class="mini-feed" id="miniFeed"></div>
+          </div>
+        </article>
+
+        <article class="feature">
+          <div class="feature__body">
+            <h3 data-i18n="features.threadTitle">График движения по линии</h3>
+            <p class="feature__key" data-i18n="features.threadKey">Сбой интервала видно раньше, чем в любой сводке: сошедшиеся линии — это вагоны, идущие паровозом.</p>
+            <p data-i18n="features.threadText">Классическая «нитка»: по вертикали время, по горизонтали путь. Ровный интервал — пачка параллельных линий.</p>
+            <span class="feature__note"><svg width="14" height="14" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="features.threadNote">Перемотка суток вперёд и назад</span></span>
+          </div>
+          <div class="feature__demo">
+            <svg class="mini-thread" id="miniThread"
+                 role="img" data-i18n-attr="aria-label:features.threadAlt"
+                 aria-label="График движения: наклонные линии рейсов, расходящиеся при сбое интервала"></svg>
+          </div>
+        </article>
+
+        <article class="feature">
+          <div class="feature__body">
+            <h3 data-i18n="features.reportsTitle">Отчёты, которые не стыдно отдать городу</h3>
+            <p class="feature__key" data-i18n="features.reportsKey">Цифры для города берутся из событий смен, а не собираются вручную к отчётной дате.</p>
+            <p data-i18n="features.reportsText">Пунктуальность по линиям, соблюдение интервала, тепловая карта 24×7, топ проблемных перекрёстков.</p>
+            <span class="feature__note"><svg width="14" height="14" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="features.reportsNote">Выгрузка за период в PDF</span></span>
+          </div>
+          <div class="feature__demo">
+            <div class="mini-bars" id="miniBars"></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Что считает платформа -->
+  <section class="section section--tight">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="section__label" data-i18n="counts.label">Метрики</p>
+        <h2 data-i18n="counts.title">Что считает платформа</h2>
+      </div>
+      <div class="counts">
+        <div class="count">
+          <div class="count__value">±2:00</div>
+          <h3 data-i18n="counts.punctTitle">Пунктуальность</h3>
+          <p data-i18n="counts.punctText">Доля рейсов в пределах допуска по каждому вагону, линии и депо.</p>
+        </div>
+        <div class="count">
+          <div class="count__value">8:40</div>
+          <h3 data-i18n="counts.headwayTitle">Интервалы</h3>
+          <p data-i18n="counts.headwayText">План и факт по каждой линии, разрывы и скопления с указанием выходов.</p>
+        </div>
+        <div class="count">
+          <div class="count__value">14:22</div>
+          <h3 data-i18n="counts.downtimeTitle">Простои</h3>
+          <p data-i18n="counts.downtimeText">Сколько минут вагоны стояли, по какой причине и сколько это стоило.</p>
+        </div>
+        <div class="count">
+          <div class="count__value">41 280</div>
+          <h3 data-i18n="counts.mileageTitle">Пробег</h3>
+          <p data-i18n="counts.mileageText">Километры по вагонам и выходам — для планирования ТО и списания ресурса.</p>
+        </div>
+        <div class="count">
+          <div class="count__value">188,4</div>
+          <h3 data-i18n="counts.energyTitle">Расход энергии</h3>
+          <p data-i18n="counts.energyText">МВт·ч по секциям контактной сети с привязкой к графику движения.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Цифры внедрения -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="section__label" data-i18n="results.label">Результаты</p>
+        <h2 data-i18n="results.title">Что изменилось в Лодзи за восемь месяцев</h2>
+      </div>
+      <div class="results">
+        <div class="result">
+          <div class="result__value">74 → 86<small>&thinsp;%</small></div>
+          <p data-i18n="results.punct">Пунктуальность сети. Считается по рейсам в пределах ±2 минут от графика.</p>
+        </div>
+        <div class="result">
+          <div class="result__value">−18<small>&thinsp;%</small></div>
+          <p data-i18n="results.downtime">Суммарный простой вагонов за месяц: события закрываются быстрее, потому что видны сразу.</p>
+        </div>
+        <div class="result">
+          <div class="result__value">4<small>&thinsp;<span data-i18n="results.reactionUnit">мин</span></small></div>
+          <p data-i18n="results.reaction">Среднее время от происшествия до решения диспетчера. Было одиннадцать.</p>
+        </div>
+        <div class="result">
+          <div class="result__value">0<small>&thinsp;<span data-i18n="results.tablesUnit">таблиц</span></small></div>
+          <p data-i18n="results.tables">Excel-файлов с графиками выхода, которые кто-то ведёт руками.</p>
+        </div>
+      </div>
+      <p style="margin-top:var(--s8);font-size:13px;color:var(--ink-3)" data-i18n="results.note">
+        Данные первого внедрения: депо Хойны, Лодзь, январь — август 2026.
+      </p>
+    </div>
+  </section>
+
+  <!-- Отзывы -->
+  <section class="section">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="section__label" data-i18n="quotes.label">Кто уже работает</p>
+        <h2 data-i18n="quotes.title">Три роли — три разных ответа на вопрос «стало ли легче»</h2>
+      </div>
+      <div class="quotes">
+        <figure class="quote">
+          <blockquote data-i18n="quotes.one">«Первую неделю я всё равно держал открытым свой Excel. На второй перестал.»</blockquote>
+          <figcaption><b data-i18n="quotes.oneName">Ежи</b><span data-i18n="quotes.oneRole">диспетчер, 11 лет в депо Хойны</span></figcaption>
+        </figure>
+        <figure class="quote">
+          <blockquote data-i18n="quotes.two">«Я вижу смену с телефона из машины. Раньше это означало пять звонков.»</blockquote>
+          <figcaption><b data-i18n="quotes.twoName">Агнешка</b><span data-i18n="quotes.twoRole">начальник депо Телефоничная</span></figcaption>
+        </figure>
+        <figure class="quote">
+          <blockquote data-i18n="quotes.three">«Городу мы отчитываемся пунктуальностью. Впервые эта цифра берётся не с потолка.»</blockquote>
+          <figcaption><b data-i18n="quotes.threeName">Пшемыслав</b><span data-i18n="quotes.threeRole">замдиректора по эксплуатации</span></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Внедрение -->
+  <section class="section" id="implementation">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="section__label" data-i18n="steps.label">Внедрение</p>
+        <h2 data-i18n="steps.title">От первого разговора до рабочей смены — семь недель</h2>
+        <p class="section__lead" data-i18n="steps.lead">
+          Мы не просим менять подвижной состав или ставить новое оборудование
+          в вагоны, если у вас уже есть GPS-трекеры.
+        </p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step__num"><span>01</span><span data-i18n="steps.oneTime">3–5 дней</span></div>
+          <h3 data-i18n="steps.oneTitle">Схема вашей сети</h3>
+          <p data-i18n="steps.oneText">Рисуем линии, узлы и депо по вашим маршрутам. Схему согласовывает диспетчерская, а не отдел закупок.</p>
+        </div>
+        <div class="step">
+          <div class="step__num"><span>02</span><span data-i18n="steps.twoTime">2 недели</span></div>
+          <h3 data-i18n="steps.twoTitle">Подключение данных</h3>
+          <p data-i18n="steps.twoText">GPS-трекеры, турникеты, датчики контактной сети, погодный сервис. Работаем с тем, что уже установлено.</p>
+        </div>
+        <div class="step">
+          <div class="step__num"><span>03</span><span data-i18n="steps.threeTime">2 недели</span></div>
+          <h3 data-i18n="steps.threeTitle">Параллельная смена</h3>
+          <p data-i18n="steps.threeText">Диспетчер работает по-старому, ТАКТ идёт рядом. Сверяем расхождения и настраиваем допуски.</p>
+        </div>
+        <div class="step">
+          <div class="step__num"><span>04</span><span data-i18n="steps.fourTime">1 неделя</span></div>
+          <h3 data-i18n="steps.fourTitle">Переход и обучение</h3>
+          <p data-i18n="steps.fourText">Смена переходит целиком. Обучение занимает один день: интерфейс повторяет то, как диспетчер уже думает.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Цены кратко -->
+  <section class="section" id="pricing">
+    <div class="wrap">
+      <div class="section__head">
+        <p class="section__label" data-i18n="plans.label">Цены</p>
+        <h2 data-i18n="plans.title">Считаем по вагонам, а не по пользователям</h2>
+        <p class="section__lead" data-i18n="plans.lead">
+          Диспетчеров можно заводить сколько нужно: начальник смены, ночной диспетчер,
+          дежурный по депо, инженер службы пути. Плата не меняется.
+        </p>
+      </div>
+
+      <div class="plans">
+        <div class="plan">
+          <div class="plan__name" data-i18n="plans.startName">Стартовый</div>
+          <div class="plan__price">1 200 <small data-i18n="plans.perMonth">zł / мес</small></div>
+          <ul class="plan__list">
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="plans.start1">До 50 вагонов в парке</span></li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="plans.start2">Схема сети, линии, происшествия</span></li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="plans.start3">Отчёты за смену, неделю и месяц</span></li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="plans.start6">Поддержка по будням, ответ за 8 часов</span></li>
+          </ul>
+          <a class="btn btn--ghost" href="pricing.html" data-i18n="plans.more">Подробнее</a>
+        </div>
+
+        <div class="plan" data-featured="true">
+          <div class="plan__name" data-i18n="plans.cityName">Городской</div>
+          <div class="plan__price">3 900 <small data-i18n="plans.perMonth">zł / мес</small></div>
+          <ul class="plan__list">
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="plans.city1">Без ограничения по парку</span></li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="plans.city3">Отчётность для города и выгрузка PDF</span></li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="plans.city4">Роли и права по депо, журнал действий</span></li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="plans.city6">Поддержка 24/7, реакция за 4 часа</span></li>
+          </ul>
+          <a class="btn" href="pricing.html" data-i18n="plans.more">Подробнее</a>
+        </div>
+
+        <div class="plan">
+          <div class="plan__name" data-i18n="plans.customName">Индивидуальный</div>
+          <div class="plan__price plan__price--text" data-i18n="plans.onRequest">по запросу</div>
+          <ul class="plan__list">
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="plans.custom1">Несколько городов в одном контуре</span></li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="plans.custom2">Установка на серверах оператора</span></li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="plans.custom3">Интеграции с вашими системами и API</span></li>
+            <li><svg width="16" height="16" aria-hidden="true"><use href="#ic-check"/></svg><span data-i18n="plans.custom5">Выделенный инженер внедрения</span></li>
+          </ul>
+          <a class="btn btn--ghost" href="#request" data-i18n="plans.request">Запросить внедрение</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="wrap wrap--narrow">
+      <div class="section__head">
+        <p class="section__label" data-i18n="faq.label">Вопросы</p>
+        <h2 data-i18n="faq.title">О чём спрашивают до подписания</h2>
+      </div>
+      <div class="faq">
+        <details open>
+          <summary data-i18n="faq.q1">Нужно ли ставить новое оборудование в вагоны?</summary>
+          <p data-i18n="faq.a1">Если в парке уже есть GPS-трекеры, нет. Мы подключаемся к тому потоку данных,
+          который у вас уже собирается, и добавляем недостающее только там, где без него
+          не обойтись: чаще всего это датчики на секциях контактной сети.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q2">Что будет, если пропадёт связь с вагоном?</summary>
+          <p data-i18n="faq.a2">Вагон переходит в состояние «вне линии» и подсвечивается в списке отдельно.
+          Система не додумывает его положение: показывать выдуманную точку хуже, чем честно
+          сказать, что связи нет. Последнее известное место остаётся на схеме серым.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q3">Диспетчеры привыкли к старой схеме. Сколько занимает переобучение?</summary>
+          <p data-i18n="faq.a3">Один день, и мы специально закладываем две недели параллельной работы. Интерфейс
+          повторяет привычную логику: схема, а не карта; выход, а не порядковый номер;
+          интервал, а не абстрактный KPI.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q4">Где хранятся данные?</summary>
+          <p data-i18n="faq.a4">По умолчанию в европейском дата-центре, с ежедневным резервным копированием.
+          На тарифе «Индивидуальный» систему можно поставить на серверы оператора —
+          тогда данные не покидают вашего контура.</p>
+        </details>
+        <details>
+          <summary data-i18n="faq.q5">Можно ли выгружать отчёты в наши форматы?</summary>
+          <p data-i18n="faq.a5">Да. PDF для города, CSV и XLSX для внутренней отчётности, а также API,
+          если отчёт нужен другой системе. Формат таблицы подстраиваем под то,
+          что от вас уже требует город.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Заявка -->
+  <section class="section" id="request">
+    <div class="wrap wrap--narrow">
+      <div class="section__head">
+        <p class="section__label" data-i18n="request.label">Запрос внедрения</p>
+        <h2 data-i18n="request.title">Расскажите про свою сеть</h2>
+        <p class="section__lead" data-i18n="request.lead">
+          Ответим в течение рабочего дня и покажем демо на данных вашего города —
+          для этого достаточно списка маршрутов.
+        </p>
+      </div>
+
+      <div class="request">
+        <form id="requestForm" novalidate>
+          <div class="request__grid">
+            <div class="field">
+              <label for="rf-name" data-i18n="request.name">Имя и должность</label>
+              <input class="input" id="rf-name" name="name" type="text" required autocomplete="name"
+                     data-i18n-attr="placeholder:request.namePh" placeholder="Ежи Новак, начальник смены">
+              <span class="field-error"><svg width="14" height="14" aria-hidden="true"><use href="#ic-warn"/></svg><span></span></span>
+            </div>
+            <div class="field">
+              <label for="rf-org" data-i18n="request.org">Оператор или город</label>
+              <input class="input" id="rf-org" name="org" type="text" required autocomplete="organization"
+                     data-i18n-attr="placeholder:request.orgPh" placeholder="MPK Łódź">
+              <span class="field-error"><svg width="14" height="14" aria-hidden="true"><use href="#ic-warn"/></svg><span></span></span>
+            </div>
+            <div class="field">
+              <label for="rf-email" data-i18n="request.email">Рабочая почта</label>
+              <input class="input" id="rf-email" name="email" type="email" required autocomplete="email"
+                     data-i18n-attr="placeholder:request.emailPh" placeholder="name@mpk.example">
+              <span class="field-error"><svg width="14" height="14" aria-hidden="true"><use href="#ic-warn"/></svg><span></span></span>
+            </div>
+            <div class="field">
+              <label for="rf-fleet" data-i18n="request.fleet">Вагонов в парке</label>
+              <input class="input" id="rf-fleet" name="fleet" type="text" inputmode="numeric" required
+                     data-i18n-attr="placeholder:request.fleetPh" placeholder="52">
+              <span class="field-error"><svg width="14" height="14" aria-hidden="true"><use href="#ic-warn"/></svg><span></span></span>
+            </div>
+            <div class="field field--wide">
+              <label for="rf-note" data-i18n="request.note">Что болит сильнее всего</label>
+              <textarea class="textarea" id="rf-note" name="note"
+                        data-i18n-attr="placeholder:request.notePh"
+                        placeholder="Интервалы разъезжаются в час пик, отчётность для города собираем вручную"></textarea>
+            </div>
+          </div>
+
+          <div class="hp" aria-hidden="true">
+            <label for="rf-hp" data-i18n="request.hp">Не заполняйте это поле</label>
+            <input id="rf-hp" name="company_url" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
+          <div class="request__foot">
+            <button class="btn btn--lg" type="submit" data-i18n="request.submit">Запросить внедрение</button>
+            <p class="request__note">
+              <span data-i18n="request.consent">Отправляя форму, вы соглашаетесь на обработку контактных данных
+              для ответа на запрос. Подробнее — в</span>
+              <a href="privacy.html" data-i18n="request.consentLink">политике конфиденциальности</a>.
+            </p>
+          </div>
+        </form>
+
+        <div class="request__done" id="requestDone" hidden tabindex="-1">
+          <h3 style="font-size:17px" data-i18n="request.doneTitle">Форма проверена, но заявка никуда не ушла</h3>
+          <p style="font-size:14px;color:var(--ink-2);max-width:60ch" data-i18n="request.doneText">
+            Это демонстрационный сайт: у него нет серверной части, поэтому отправлять
+            письмо некуда. При запуске сюда подключается почтовый сервис или CRM —
+            что именно, написано в README проекта.
+          </p>
+        </div>
+      </div>
+
+      <div class="demo-note" style="margin-top:var(--s6)">
+        <svg width="16" height="16" aria-hidden="true"><use href="#ic-info"/></svg>
+        <span data-i18n="request.demoNote">
+          Весь контент на сайте демонстрационный: компания «ТАКТ», внедрение в Лодзи,
+          сотрудники и цифры вымышлены. Названия улиц и депо реальные, события — нет.
+        </span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <div class="site-foot__grid">
+      <div>
+        <a class="brand" href="index.html" style="margin-bottom:var(--s3)">
+          <svg class="brand__mark" aria-hidden="true"><use href="#ic-mark"/></svg>
+          ТАКТ
+        </a>
+        <p style="font-size:14px;color:var(--ink-2);max-width:34ch" data-i18n="foot.about">
+          Диспетчерская для городского электротранспорта. Лодзь, Быдгощ и ещё один город,
+          который пока не разрешил о себе рассказывать.
+        </p>
+      </div>
+      <div>
+        <h2 class="foot-title" data-i18n="foot.product">Продукт</h2>
+        <ul>
+          <li><a href="features.html" data-i18n="nav.features">Возможности</a></li>
+          <li><a href="pricing.html" data-i18n="nav.pricing">Цены</a></li>
+          <li><a href="app.html" data-demo-link="app.html" data-i18n="foot.demo">Демо диспетчерской</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="foot-title" data-i18n="foot.company">Компания</h2>
+        <ul>
+          <li><a href="#implementation" data-i18n="nav.implementation">Внедрение</a></li>
+          <li><a href="#faq" data-i18n="nav.faq">Вопросы</a></li>
+          <li><a href="#request" data-i18n="foot.contact">Связаться</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2 class="foot-title" data-i18n="foot.legal">Правовое</h2>
+        <ul>
+          <li><a href="privacy.html" data-i18n="foot.privacy">Политика конфиденциальности</a></li>
+          <li><a href="privacy.html#cookies" data-i18n="foot.cookies">Файлы cookie</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="site-foot__bottom">
+      <span data-i18n="foot.copy">© 2026 ТАКТ · демонстрационный проект</span>
+      <span data-i18n="foot.address">Лодзь, ул. Пётрковска (адрес вымышлен)</span>
+      <span data-i18n="foot.scheme">Схема сети — стилизованная, не географическая</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/i18n/ru.js"></script>
+<script src="assets/js/i18n/pl.js"></script>
+<script src="assets/js/i18n/en.js"></script>
+<script src="assets/js/i18n/ru-app.js"></script>
+<script src="assets/js/i18n/pl-app.js"></script>
+<script src="assets/js/i18n/en-app.js"></script>
+<script src="assets/js/i18n/incidents-pl.js"></script>
+<script src="assets/js/i18n/incidents-en.js"></script>
+<script src="assets/js/i18n/core.js"></script>
+<script src="assets/js/data/network.js"></script>
+<script src="assets/js/data/fleet.js"></script>
+<script src="assets/js/data/incidents.js"></script>
+<script src="assets/js/data/reports.js"></script>
+<script src="assets/js/sim/geometry.js"></script>
+<script src="assets/js/sim/clock.js"></script>
+<script src="assets/js/sim/simulator.js"></script>
+<script src="assets/js/ui/landing.js"></script>
+<script src="assets/js/ui/site-tools.js"></script>
+</body>
+</html>
