@@ -49,6 +49,21 @@
 /* Пять чисел смены. Ширина колонок фиксирована табличными цифрами,
    поэтому обновление раз в 5 секунд не двигает соседей. */
 .metrics { display: flex; align-items: center; gap: var(--s5); margin-left: auto; min-width: 0; }
+
+/* Показатели занимают место между экранами и инструментами. Когда его
+   мало, менее важные уходят по очереди: смена (она статична), интервал,
+   пунктуальность. «На линии» и «открытых» видны всегда. Без этого на
+   ноутбуках 1024–1440 px строка уезжала под переключатель языков.
+   Пороги — по самому широкому (русскому) тексту с запасом на рост чисел. */
+@media (min-width: 1024px) {
+  .metrics {
+    flex: 1 1 0; justify-content: flex-end;
+    container-type: inline-size; overflow: hidden;
+  }
+}
+@container (max-width: 511px) { .metrics > .metric:nth-child(5) { display: none; } }
+@container (max-width: 383px) { .metrics > .metric:nth-child(2) { display: none; } }
+@container (max-width: 266px) { .metrics > .metric:nth-child(3) { display: none; } }
 .metric { display: flex; flex-direction: column; gap: 1px; line-height: 1.1; }
 .metric__label { font-size: 11px; color: var(--ink-3); white-space: nowrap; }
 .metric__value {
@@ -596,6 +611,31 @@
   .track-mark:not([data-major='true']) { display: none; }
   .metric:last-child { display: none; }          /* «смена» статична — на телефоне место дороже */
   .screen__head .chip { display: none; }
+  /* Роли и экран происшествий задают свои колонки. Селектор у них тяжелее,
+     чем у .app, и без этой строки они возвращали телефону три колонки. */
+  .app[data-role],
+  .app[data-screen] { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* Поиск и роль сворачиваются до значков на узком ноутбуке — место
+   нужнее показателям, а на телефоне без этого инструменты шире экрана.
+   Подписи остаются для скринридера. */
+.app-search__icon { display: none; }
+@media (max-width: 1280px) {
+  .app-search { padding-inline: var(--s2); min-width: 38px; }
+  .app-search__icon { display: block; }
+  .app-search .kbd { display: none; }
+  .app-search__text {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  }
+}
+@media (max-width: 1100px) {
+  #roleToggle { padding-inline: var(--s2); min-width: 38px; }
+  #roleLabel {
+    position: absolute; width: 1px; height: 1px; overflow: hidden;
+    clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap;
+  }
 }
 
 /* ——— экран начальника депо ———
